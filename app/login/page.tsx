@@ -7,17 +7,14 @@ import { Input } from '@/components/ui/Input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
 import { useRouter } from 'next/navigation';
 
-type LoginMode = 'password' | 'magic';
-
 export default function LoginPage() {
-  const [mode, setMode] = useState<LoginMode>('password');
   const [identifier, setIdentifier] = useState(''); // username OR email
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const router = useRouter();
 
-  // Password login: accepts username (e.g. eval-abc123) or internal email
+  // Password login: accepts username (e.g. eval-abc123) or real email
   const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!identifier || !password) return;
@@ -42,42 +39,8 @@ export default function LoginPage() {
             : error.message,
         });
       } else {
-        // Let auth callback route handle redirect
+        // Let auth callback route handle redirect based on role
         router.push('/auth/callback?type=password');
-      }
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'An error occurred.' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Magic Link: only for institutional email addresses (admin/data_operator)
-  const handleMagicLink = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!identifier) return;
-
-    setIsLoading(true);
-    setMessage(null);
-
-    try {
-      const supabase = createClient();
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-      const { error } = await supabase.auth.signInWithOtp({
-        email: identifier,
-        options: {
-          emailRedirectTo: `${siteUrl}/auth/callback`,
-          shouldCreateUser: false, // Don't allow self-registration via magic link
-        },
-      });
-
-      if (error) {
-        setMessage({ type: 'error', text: error.message });
-      } else {
-        setMessage({
-          type: 'success',
-          text: 'Magic link sent! Check your institutional email inbox.',
-        });
       }
     } catch (err: any) {
       setMessage({ type: 'error', text: err.message || 'An error occurred.' });
@@ -113,126 +76,59 @@ export default function LoginPage() {
               Sign In to Platform
             </CardTitle>
             <CardDescription className="text-center">
-              {mode === 'password'
-                ? 'Use the username and password provided by your administrator'
-                : 'Admin & coordinator access via institutional email'}
+              Use your username or email and password to log in.
             </CardDescription>
-
-            {/* Mode Toggle */}
-            <div className="flex rounded-lg overflow-hidden border border-slate-800 mt-3">
-              <button
-                type="button"
-                onClick={() => { setMode('password'); setMessage(null); }}
-                className={`flex-1 text-xs py-2 font-semibold transition-colors ${
-                  mode === 'password'
-                    ? 'bg-cyan-500/20 text-cyan-300 border-r border-slate-800'
-                    : 'bg-transparent text-slate-500 hover:text-slate-300 border-r border-slate-800'
-                }`}
-              >
-                🔑 Evaluator / Jury Login
-              </button>
-              <button
-                type="button"
-                onClick={() => { setMode('magic'); setMessage(null); }}
-                className={`flex-1 text-xs py-2 font-semibold transition-colors ${
-                  mode === 'magic'
-                    ? 'bg-fuchsia-500/20 text-fuchsia-300'
-                    : 'bg-transparent text-slate-500 hover:text-slate-300'
-                }`}
-              >
-                ✉️ Admin Magic Link
-              </button>
-            </div>
           </CardHeader>
 
           <CardContent>
-            {mode === 'password' ? (
-              <form onSubmit={handlePasswordLogin} className="space-y-4">
-                <Input
-                  label="Username"
-                  type="text"
-                  placeholder="eval-abc123"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value.trim())}
-                  required
-                  autoComplete="username"
-                  leftIcon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  }
-                />
-                <Input
-                  label="Password"
-                  type="password"
-                  placeholder="••••••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                  leftIcon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                  }
-                />
+            <form onSubmit={handlePasswordLogin} className="space-y-4">
+              <Input
+                label="Username or Email"
+                type="text"
+                placeholder="eval-abc123 or admin@vit.ac.in"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value.trim())}
+                required
+                autoComplete="username"
+                leftIcon={
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                }
+              />
+              <Input
+                label="Password"
+                type="password"
+                placeholder="••••••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                leftIcon={
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                }
+              />
 
-                {message && (
-                  <div className={`p-3 rounded-lg text-xs font-medium border ${
-                    message.type === 'success'
-                      ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300'
-                      : 'bg-rose-950/80 border-rose-500/50 text-rose-300'
-                  }`}>
-                    {message.text}
-                  </div>
-                )}
+              {message && (
+                <div className={`p-3 rounded-lg text-xs font-medium border ${
+                  message.type === 'success'
+                    ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300'
+                    : 'bg-rose-950/80 border-rose-500/50 text-rose-300'
+                }`}>
+                  {message.text}
+                </div>
+              )}
 
-                <Button type="submit" variant="primary" className="w-full py-3" isLoading={isLoading}>
-                  Sign In
-                </Button>
+              <Button type="submit" variant="primary" className="w-full py-3" isLoading={isLoading}>
+                Sign In
+              </Button>
 
-                <p className="text-center text-[11px] text-slate-500">
-                  Your username and password were provided by the SIH coordinator.
-                  Contact your administrator if you have lost access.
-                </p>
-              </form>
-            ) : (
-              <form onSubmit={handleMagicLink} className="space-y-4">
-                <Input
-                  label="Institutional Email Address"
-                  type="email"
-                  placeholder="coordinator@vit.ac.in"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  required
-                  autoComplete="email"
-                  leftIcon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  }
-                />
-
-                {message && (
-                  <div className={`p-3 rounded-lg text-xs font-medium border ${
-                    message.type === 'success'
-                      ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300'
-                      : 'bg-rose-950/80 border-rose-500/50 text-rose-300'
-                  }`}>
-                    {message.text}
-                  </div>
-                )}
-
-                <Button type="submit" variant="accent" className="w-full py-3" isLoading={isLoading}>
-                  Send Magic Link
-                </Button>
-
-                <p className="text-center text-[11px] text-slate-500">
-                  Admin and coordinator accounts use institutional email. Magic links are not used
-                  for evaluator/jury logins.
-                </p>
-              </form>
-            )}
+              <p className="text-center text-[11px] text-slate-500">
+                Contact your administrator if you have lost access to your account.
+              </p>
+            </form>
           </CardContent>
 
           <CardFooter className="justify-center border-t border-slate-800/80 pt-4 text-[11px] text-slate-500">

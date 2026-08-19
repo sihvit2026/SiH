@@ -20,7 +20,7 @@ export default function HomePage() {
         </div>
         <Link href="/login">
           <Button variant="primary" size="sm">
-            Sign In with Magic Link →
+            Sign In to Platform →
           </Button>
         </Link>
       </header>
