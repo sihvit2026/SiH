@@ -1,12 +1,15 @@
 import React from 'react';
 import { Shell } from '@/components/layout/Shell';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { TableContainer, Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAuth } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import { AdminEvaluatorsClientWrapper } from '@/components/admin/AdminEvaluatorsClientWrapper';
+import type { EvaluatorRow } from '@/lib/schemas';
+
+export const dynamic = 'force-dynamic';
 
 const adminNavItems = [
   { label: 'Dashboard', href: '/admin', icon: '📊' },
@@ -20,13 +23,14 @@ const adminNavItems = [
 
 async function toggleJuryAttendance(formData: FormData) {
   'use server';
-  const session = await requireAuth(['admin', 'data_operator']);
+  await requireAuth(['admin', 'data_operator']);
   const evaluatorId = formData.get('evaluatorId') as string;
   const currentAttendance = formData.get('currentAttendance') as string;
   const nextAttendance = currentAttendance === 'present' ? 'absent' : 'present';
 
   try {
     const supabase = createAdminClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase.from('evaluators') as any)
       .update({ round2_attendance: nextAttendance })
       .eq('id', evaluatorId);
@@ -39,7 +43,7 @@ async function toggleJuryAttendance(formData: FormData) {
 
 export default async function AdminEvaluatorsPage() {
   const session = await requireAuth(['admin', 'data_operator']);
-  let evaluators: any[] = [];
+  let evaluators: EvaluatorRow[] = [];
 
   try {
     const supabase = createAdminClient();
@@ -49,7 +53,7 @@ export default async function AdminEvaluatorsPage() {
       .order('created_at', { ascending: false });
 
     if (fetchedEvaluators && fetchedEvaluators.length > 0) {
-      evaluators = fetchedEvaluators;
+      evaluators = fetchedEvaluators as EvaluatorRow[];
     }
   } catch (err) {
     console.error('Failed to fetch evaluators:', err);
@@ -74,69 +78,61 @@ export default async function AdminEvaluatorsPage() {
       userName={session.name}
       navItems={adminNavItems}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-slate-100">Evaluator & Jury Roster</h1>
-          <p className="text-xs text-slate-400">
-            Manage Round 1 evaluators and toggle Round 2 jury attendance (`round2_attendance = &apos;present&apos;`)
-          </p>
-        </div>
-        <Button variant="accent" size="sm">+ Add Evaluator / Jury Member</Button>
-      </div>
-
-      <TableContainer>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Evaluator / Jury Name</TableHead>
-              <TableHead>Assigned Role</TableHead>
-              <TableHead>Round 2 Attendance State</TableHead>
-              <TableHead className="text-right">Attendance Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {evaluators.map((person) => (
-              <TableRow key={person.id}>
-                <TableCell>
-                  <div className="font-semibold text-slate-100">{person.name}</div>
-                  <div className="text-[10px] text-slate-500 font-mono">ID: {person.id}</div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={person.role === 'jury' ? 'purple' : 'cyan'} glow>
-                    {person.role === 'jury' ? '⚖️ ROUND 2 JURY' : '📝 ROUND 1 EVALUATOR'}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  {person.role === 'jury' ? (
-                    <Badge variant={person.round2_attendance === 'present' ? 'green' : 'rose'} glow>
-                      {person.round2_attendance === 'present' ? 'PRESENT (ELIGIBLE)' : 'ABSENT (LOCKED)'}
-                    </Badge>
-                  ) : (
-                    <span className="text-xs text-slate-500 font-mono">N/A (Round 1 Only)</span>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  {person.role === 'jury' ? (
-                    <form action={toggleJuryAttendance} className="inline-block">
-                      <input type="hidden" name="evaluatorId" value={person.id} />
-                      <input type="hidden" name="currentAttendance" value={person.round2_attendance} />
-                      <Button
-                        type="submit"
-                        variant={person.round2_attendance === 'present' ? 'danger' : 'primary'}
-                        size="sm"
-                      >
-                        {person.round2_attendance === 'present' ? 'Mark Absent' : 'Mark Present'}
-                      </Button>
-                    </form>
-                  ) : (
-                    <span className="text-xs text-slate-500">—</span>
-                  )}
-                </TableCell>
+      <AdminEvaluatorsClientWrapper>
+        <TableContainer>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Evaluator / Jury Name</TableHead>
+                <TableHead>Assigned Role</TableHead>
+                <TableHead>Round 2 Attendance State</TableHead>
+                <TableHead className="text-right">Attendance Action</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHeader>
+            <TableBody>
+              {evaluators.map((person) => (
+                <TableRow key={person.id}>
+                  <TableCell>
+                    <div className="font-semibold text-slate-100">{person.name}</div>
+                    <div className="text-[10px] text-slate-500 font-mono">ID: {person.id}</div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={person.role === 'jury' ? 'purple' : 'cyan'} glow>
+                      {person.role === 'jury' ? '⚖️ ROUND 2 JURY' : '📝 ROUND 1 EVALUATOR'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {person.role === 'jury' ? (
+                      <Badge variant={person.round2_attendance === 'present' ? 'green' : 'rose'} glow>
+                        {person.round2_attendance === 'present' ? 'PRESENT (ELIGIBLE)' : 'ABSENT (LOCKED)'}
+                      </Badge>
+                    ) : (
+                      <span className="text-xs text-slate-500 font-mono">N/A (Round 1 Only)</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {person.role === 'jury' ? (
+                      <form action={toggleJuryAttendance} className="inline-block">
+                        <input type="hidden" name="evaluatorId" value={person.id} />
+                        <input type="hidden" name="currentAttendance" value={person.round2_attendance} />
+                        <Button
+                          type="submit"
+                          variant={person.round2_attendance === 'present' ? 'danger' : 'primary'}
+                          size="sm"
+                        >
+                          {person.round2_attendance === 'present' ? 'Mark Absent' : 'Mark Present'}
+                        </Button>
+                      </form>
+                    ) : (
+                      <span className="text-xs text-slate-500">—</span>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </AdminEvaluatorsClientWrapper>
     </Shell>
   );
 }
