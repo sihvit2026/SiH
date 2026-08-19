@@ -6,14 +6,16 @@ export async function GET(request: Request) {
   const code = searchParams.get('code');
   const type = searchParams.get('type'); // 'password' for password login redirect
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || origin;
+
   // Handle password login redirect (no code exchange needed — session already set)
   if (type === 'password') {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      return NextResponse.redirect(`${origin}${await getRoleHome(supabase, user.id)}`);
+      return NextResponse.redirect(`${siteUrl}${await getRoleHome(supabase, user.id)}`);
     }
-    return NextResponse.redirect(`${origin}/login`);
+    return NextResponse.redirect(`${siteUrl}/login`);
   }
 
   // Handle magic link / OAuth code exchange
@@ -23,12 +25,12 @@ export async function GET(request: Request) {
     if (!error) {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        return NextResponse.redirect(`${origin}${await getRoleHome(supabase, user.id)}`);
+        return NextResponse.redirect(`${siteUrl}${await getRoleHome(supabase, user.id)}`);
       }
     }
   }
 
-  return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`);
+  return NextResponse.redirect(`${siteUrl}/login?error=auth_callback_failed`);
 }
 
 /** Resolve a user's home route based on their role. */

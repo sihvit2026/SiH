@@ -62,10 +62,11 @@ export default function LoginPage() {
 
     try {
       const supabase = createClient();
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
       const { error } = await supabase.auth.signInWithOtp({
         email: identifier,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${siteUrl}/auth/callback`,
           shouldCreateUser: false, // Don't allow self-registration via magic link
         },
       });
