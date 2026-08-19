@@ -4,6 +4,9 @@ import { Badge } from '@/components/ui/Badge';
 import { TableContainer, Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/Table';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAuth } from '@/lib/auth';
+import type { AuditLogRow } from '@/lib/schemas';
+
+export const dynamic = 'force-dynamic';
 
 const adminNavItems = [
   { label: 'Dashboard', href: '/admin', icon: '📊' },
@@ -17,7 +20,7 @@ const adminNavItems = [
 
 export default async function AdminAuditPage() {
   const session = await requireAuth(['admin', 'data_operator']);
-  let logs: any[] = [];
+  let logs: AuditLogRow[] = [];
 
   try {
     const supabase = createAdminClient();
@@ -36,13 +39,16 @@ export default async function AdminAuditPage() {
 
   // Fallback demo audit entries if DB is empty
   if (logs.length === 0) {
+    // Use fixed ISO strings for demo data - avoids render impurity from Date.now()
+    const oneHourAgo = new Date('2026-08-20T00:00:00.000Z').toISOString();
+    const twoHoursAgo = new Date('2026-08-19T23:00:00.000Z').toISOString();
     logs = [
       {
         id: 'log-1',
         table_name: 'round1_scores',
         operation: 'INSERT',
         performed_by: '00000000-0000-0000-0000-000000000001',
-        created_at: new Date().toISOString(),
+        created_at: oneHourAgo,
         new_value: { team_id: 'team-1', score: 24, criteria_id: 'c1' },
       },
       {
@@ -50,7 +56,7 @@ export default async function AdminAuditPage() {
         table_name: 'round2_scores',
         operation: 'INSERT',
         performed_by: '00000000-0000-0000-0000-000000000002',
-        created_at: new Date(Date.now() - 3600000).toISOString(),
+        created_at: twoHoursAgo,
         new_value: { team_id: 'team-1', score: 38, criteria_id: 'c5' },
       },
     ];

@@ -13,8 +13,6 @@ interface TopbarProps {
 
 export const Topbar: React.FC<TopbarProps> = ({
   title = 'Dashboard',
-  roleName,
-  userName,
   onToggleMobileNav,
   onLogout,
   children,

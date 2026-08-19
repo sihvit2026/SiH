@@ -6,6 +6,9 @@ import { TableContainer, Table, TableHeader, TableRow, TableHead, TableBody, Tab
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAuth } from '@/lib/auth';
 import { ReportsExportActions } from '@/components/reports/ReportsExportActions';
+import type { Round1AverageRow, Round2AverageRow } from '@/lib/schemas';
+
+export const dynamic = 'force-dynamic';
 
 const reportsNavItems = [
   { label: 'Overview Dashboard', href: '/admin', icon: '📊' },
@@ -15,8 +18,8 @@ const reportsNavItems = [
 
 export default async function ReportsPage() {
   const session = await requireAuth();
-  let round1Averages: any[] = [];
-  let round2Averages: any[] = [];
+  let round1Averages: Round1AverageRow[] = [];
+  let round2Averages: Round2AverageRow[] = [];
 
   try {
     const supabase = createAdminClient();
@@ -136,7 +139,7 @@ export default async function ReportsPage() {
                         {row.avg_score ?? 'N/A'} <span className="text-[10px] text-slate-500 font-normal">pts</span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={(row.result || (index === 2 ? 'standby' : 'selected')) as any} glow>
+                        <Badge variant={(row.result || (index === 2 ? 'standby' : 'selected')) as 'selected' | 'standby'} glow>
                           {(row.result || (index === 2 ? 'standby' : 'selected')).toUpperCase()}
                         </Badge>
                       </TableCell>

@@ -1,10 +1,12 @@
 import React from 'react';
 import { Shell } from '@/components/layout/Shell';
-import { Badge } from '@/components/ui/Badge';
 import { TableContainer, Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAuth } from '@/lib/auth';
+import type { AssignmentRow } from '@/lib/schemas';
+
+export const dynamic = 'force-dynamic';
 
 const adminNavItems = [
   { label: 'Dashboard', href: '/admin', icon: '📊' },
@@ -18,7 +20,7 @@ const adminNavItems = [
 
 export default async function AdminAssignmentsPage() {
   const session = await requireAuth(['admin', 'data_operator']);
-  let assignments: any[] = [];
+  let assignments: AssignmentRow[] = [];
 
   try {
     const supabase = createAdminClient();

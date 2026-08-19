@@ -42,8 +42,8 @@ export default function LoginPage() {
         // Let auth callback route handle redirect based on role
         router.push('/auth/callback?type=password');
       }
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'An error occurred.' });
+    } catch (err) {
+      setMessage({ type: 'error', text: err instanceof Error ? err.message : 'An error occurred.' });
     } finally {
       setIsLoading(false);
     }

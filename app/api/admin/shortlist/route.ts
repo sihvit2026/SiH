@@ -20,6 +20,7 @@ export async function POST(req: Request) {
     const supabase = createAdminClient();
 
     // Query team round1 average view
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: rankings, error: rankErr } = await (supabase.from('team_round1_average') as any)
       .select('team_id, avg_score')
       .order('avg_score', { ascending: false })
@@ -30,16 +31,17 @@ export async function POST(req: Request) {
     }
 
     if (rankings && rankings.length > 0) {
-      const shortlistedIds = rankings.map((r: any) => r.team_id);
+      const shortlistedIds = rankings.map((r: { team_id: string }) => r.team_id);
 
       // Update shortlisted teams status
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.from('teams') as any)
         .update({ status: 'shortlisted' })
         .in('id', shortlistedIds);
     }
 
     return NextResponse.json({ success: true, count });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Server error' }, { status: 500 });
   }
 }

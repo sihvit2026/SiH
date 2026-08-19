@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/Button';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAuth } from '@/lib/auth';
 import { AdminTeamsClientWrapper } from '@/components/admin/AdminTeamsClientWrapper';
+import type { TeamRow, StudentRow } from '@/lib/schemas';
+
+export const dynamic = 'force-dynamic';
 
 const adminNavItems = [
   { label: 'Dashboard', href: '/admin', icon: '📊' },
@@ -19,7 +22,7 @@ const adminNavItems = [
 
 export default async function AdminTeamsPage() {
   const session = await requireAuth(['admin', 'data_operator']);
-  let teams: any[] = [];
+  let teams: TeamRow[] = [];
 
   try {
     const supabase = createAdminClient();
@@ -111,7 +114,7 @@ export default async function AdminTeamsPage() {
                   <TableCell>
                     <div className="space-y-1">
                       {team.students && team.students.length > 0 ? (
-                        team.students.map((student: any) => (
+                        team.students.map((student: StudentRow) => (
                           <div key={student.id} className="text-xs text-slate-300 flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
                             <span>{student.name}</span>
@@ -124,7 +127,7 @@ export default async function AdminTeamsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={team.status as any} glow>
+                    <Badge variant={team.status as 'shortlisted' | 'registered' | 'round1_pending' | 'selected' | 'standby'} glow>
                       {team.status.replace('_', ' ').toUpperCase()}
                     </Badge>
                   </TableCell>

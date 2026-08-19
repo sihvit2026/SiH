@@ -26,7 +26,6 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
   onClose,
   onImportSuccess,
 }) => {
-  const [file, setFile] = useState<File | null>(null);
   const [parsedRows, setParsedRows] = useState<ParsedRow[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [importSummary, setImportSummary] = useState<string | null>(null);
@@ -35,7 +34,6 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
 
-    setFile(selectedFile);
     setImportSummary(null);
 
     const reader = new FileReader();
@@ -53,7 +51,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
       return;
     }
 
-    const headers = lines[0].split(',').map((h) => h.trim().toLowerCase());
+    // First line is the header row - skip it
     const rows: ParsedRow[] = [];
 
     for (let i = 1; i < lines.length; i++) {
@@ -103,8 +101,8 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
         const data = await res.json();
         setImportSummary(`Import failed: ${data.error || 'Server error'}`);
       }
-    } catch (err: any) {
-      setImportSummary(`Import failed: ${err.message}`);
+    } catch (err) {
+      setImportSummary(`Import failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsProcessing(false);
     }

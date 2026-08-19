@@ -7,6 +7,8 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAuth } from '@/lib/auth';
 import { ShortlistControlCard } from '@/components/admin/ShortlistControlCard';
 
+export const dynamic = 'force-dynamic';
+
 const adminNavItems = [
   { label: 'Dashboard', href: '/admin', icon: '📊' },
   { label: 'Teams & Members', href: '/admin/teams', icon: '👥' },
@@ -20,7 +22,7 @@ const adminNavItems = [
 export default async function AdminDashboardPage() {
   const session = await requireAuth(['admin', 'data_operator']);
 
-  let stats = {
+  const stats = {
     totalTeams: 0,
     r1Pending: 0,
     shortlisted: 0,
@@ -31,9 +33,8 @@ export default async function AdminDashboardPage() {
     juryPresentCount: 0,
     auditLogsCount: 0,
   };
-
-  let recentAuditLogs: any[] = [];
-  let teamStatusBreakdown: Record<string, number> = {};
+  let recentAuditLogs: { id: string; operation: string; table_name: string; created_at: string }[] = [];
+  const teamStatusBreakdown: Record<string, number> = {};
 
   try {
     const supabase = createAdminClient();
@@ -49,7 +50,7 @@ export default async function AdminDashboardPage() {
     stats.totalTeams = teamCount || 0;
 
     if (teams) {
-      (teams as any[]).forEach((t) => {
+      (teams as { status: string }[]).forEach((t) => {
         teamStatusBreakdown[t.status] = (teamStatusBreakdown[t.status] || 0) + 1;
       });
       stats.r1Pending = teamStatusBreakdown['round1_pending'] || 0;
@@ -58,7 +59,7 @@ export default async function AdminDashboardPage() {
     }
 
     if (evaluators) {
-      (evaluators as any[]).forEach((e) => {
+      (evaluators as { role: string; round2_attendance: string }[]).forEach((e) => {
         if (e.role === 'evaluator') stats.evaluatorsCount++;
         if (e.role === 'jury') {
           stats.juryCount++;
@@ -80,7 +81,6 @@ export default async function AdminDashboardPage() {
   const displayR1Pending = stats.r1Pending || 8;
   const displayShortlisted = stats.shortlisted || 12;
   const displaySelected = stats.selected || 0;
-  const displayEvaluators = stats.evaluatorsCount || 10;
   const displayJury = stats.juryCount || 8;
   const displayJuryPresent = stats.juryPresentCount || 6;
 

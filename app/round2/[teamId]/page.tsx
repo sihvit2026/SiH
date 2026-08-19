@@ -7,6 +7,9 @@ import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import Link from 'next/link';
+import type { CriterionRow, StudentRow, ScoreRow, CommentRow } from '@/lib/schemas';
+
+export const dynamic = 'force-dynamic';
 
 const juryNavItems = [
   { label: 'Shortlisted Teams', href: '/round2', icon: '⚖️' },
@@ -99,11 +102,11 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
   const resolvedParams = await params;
   const teamId = resolvedParams.teamId;
 
-  let teamDetails: any = null;
-  let criteriaList: any[] = [];
-  let existingScores: Record<string, number> = {};
+  let teamDetails: { id: string; team_name: string; team_code: string; status: string; students?: StudentRow[] } | null = null;
+  let criteriaList: CriterionRow[] = [];
+  const existingScores: Record<string, number> = {};
   let existingComment = '';
-  let isAttendancePresent = session.round2Attendance === 'present' || session.role === 'admin';
+  const isAttendancePresent = session.round2Attendance === 'present' || session.role === 'admin';
   let isLocked = false;
 
   try {
@@ -133,13 +136,13 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
     criteriaList = criteria || [];
 
     if (scores) {
-      scores.forEach((s) => {
+      (scores as ScoreRow[]).forEach((s) => {
         existingScores[s.criteria_id] = Number(s.score);
       });
     }
 
     if (comments && comments.length > 0) {
-      existingComment = comments[0].comment;
+      existingComment = (comments as CommentRow[])[0].comment;
     }
   } catch (err) {
     console.error('Error fetching Round 2 evaluation details:', err);
@@ -161,9 +164,9 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
 
   if (criteriaList.length === 0) {
     criteriaList = [
-      { id: 'c5', name: 'Live Working Prototype Demo', max_score: 40, weight: 1.0 },
-      { id: 'c6', name: 'System Architecture & Scalability', max_score: 30, weight: 1.0 },
-      { id: 'c7', name: 'Jury Q&A Defense & Feasibility', max_score: 30, weight: 1.0 },
+      { id: 'c5', name: 'Live Working Prototype Demo', max_score: 40, weight: 1.0, round: 2 },
+      { id: 'c6', name: 'System Architecture & Scalability', max_score: 30, weight: 1.0, round: 2 },
+      { id: 'c7', name: 'Jury Q&A Defense & Feasibility', max_score: 30, weight: 1.0, round: 2 },
     ];
   }
 
@@ -220,7 +223,7 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
               <span className="text-xs font-semibold uppercase text-slate-400 block mb-2">Student Members:</span>
               <div className="space-y-2">
                 {teamDetails.students && teamDetails.students.length > 0 ? (
-                  teamDetails.students.map((student: any) => (
+                  teamDetails.students.map((student: StudentRow) => (
                     <div key={student.id} className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 text-xs">
                       <div className="font-semibold text-slate-200">{student.name}</div>
                       <div className="text-[10px] text-slate-500 font-mono flex items-center justify-between mt-0.5">

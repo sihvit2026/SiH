@@ -32,8 +32,8 @@ export const ShortlistControlCard: React.FC<{ currentShortlisted: number }> = ({
         const data = await res.json();
         setFeedback(`Error: ${data.error || 'Failed to apply shortlist'}`);
       }
-    } catch (err: any) {
-      setFeedback(`Error: ${err.message}`);
+    } catch (err) {
+      setFeedback(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsSubmitting(false);
     }

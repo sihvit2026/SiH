@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
+import type { TeamRow, StudentRow } from '@/lib/schemas';
 
 const juryNavItems = [
   { label: 'Shortlisted Teams', href: '/round2', icon: '⚖️' },
@@ -15,7 +16,7 @@ const juryNavItems = [
 
 export default async function Round2DashboardPage() {
   const session = await requireAuth(['jury', 'admin']);
-  let shortlistedTeams: any[] = [];
+  let shortlistedTeams: TeamRow[] = [];
   let isAttendancePresent = session.round2Attendance === 'present' || session.role === 'admin';
 
   try {
@@ -110,7 +111,7 @@ export default async function Round2DashboardPage() {
                 </span>
                 <div className="space-y-1">
                   {team.students && team.students.length > 0 ? (
-                    team.students.map((student: any) => (
+                    team.students.map((student: StudentRow) => (
                       <div key={student.id} className="text-xs text-slate-300 flex items-center justify-between">
                         <span>{student.name}</span>
                         <span className="font-mono text-slate-500">{student.roll_number}</span>

@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { getCurrentUser, generateUsername, generatePassword, internalEmail } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { CreateUserSchema, type GeneratedCredential } from '@/lib/schemas';
-import { z } from 'zod';
 
 /**
  * POST /api/admin/create-user
@@ -29,7 +28,7 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-    const { name, role, designation } = parsed.data;
+    const { name, role } = parsed.data;
 
     // 3. Generate credentials server-side
     const prefix = role === 'evaluator' ? 'eval' : 'jury';
@@ -56,6 +55,7 @@ export async function POST(req: Request) {
     const userId = authData.user.id;
 
     // 5. Insert into evaluators table
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: evalError } = await (adminClient.from('evaluators') as any).insert({
       id: userId,
       name,
@@ -84,8 +84,8 @@ export async function POST(req: Request) {
     };
 
     return NextResponse.json({ success: true, credential });
-  } catch (err: any) {
+  } catch (err) {
     console.error('create-user error:', err);
-    return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Server error' }, { status: 500 });
   }
 }

@@ -6,6 +6,9 @@ import { TableContainer, Table, TableHeader, TableRow, TableHead, TableBody, Tab
 import { Button } from '@/components/ui/Button';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAuth } from '@/lib/auth';
+import type { CriterionRow } from '@/lib/schemas';
+
+export const dynamic = 'force-dynamic';
 
 const adminNavItems = [
   { label: 'Dashboard', href: '/admin', icon: '📊' },
@@ -19,7 +22,7 @@ const adminNavItems = [
 
 export default async function AdminCriteriaPage() {
   const session = await requireAuth(['admin', 'data_operator']);
-  let criteriaList: any[] = [];
+  let criteriaList: CriterionRow[] = [];
 
   try {
     const supabase = createAdminClient();

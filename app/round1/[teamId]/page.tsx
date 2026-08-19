@@ -2,13 +2,15 @@ import React from 'react';
 import { Shell } from '@/components/layout/Shell';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import type { CriterionRow, StudentRow, ScoreRow, CommentRow } from '@/lib/schemas';
+
+export const dynamic = 'force-dynamic';
 
 const evaluatorNavItems = [
   { label: 'Assigned Teams', href: '/round1', icon: '📝' },
@@ -91,9 +93,9 @@ export default async function Round1EvaluationFormPage({ params }: { params: Pro
   const resolvedParams = await params;
   const teamId = resolvedParams.teamId;
 
-  let teamDetails: any = null;
-  let criteriaList: any[] = [];
-  let existingScores: Record<string, number> = {};
+  let teamDetails: { id: string; team_name: string; team_code: string; status: string; students?: StudentRow[] } | null = null;
+  let criteriaList: CriterionRow[] = [];
+  const existingScores: Record<string, number> = {};
   let existingComment = '';
   let isLocked = false;
 
@@ -138,13 +140,13 @@ export default async function Round1EvaluationFormPage({ params }: { params: Pro
     criteriaList = criteria || [];
 
     if (scores) {
-      scores.forEach((s) => {
+      (scores as ScoreRow[]).forEach((s) => {
         existingScores[s.criteria_id] = Number(s.score);
       });
     }
 
     if (comments && comments.length > 0) {
-      existingComment = comments[0].comment;
+      existingComment = (comments as CommentRow[])[0].comment;
     }
   } catch (err) {
     console.error('Error fetching team evaluation data:', err);
@@ -166,10 +168,10 @@ export default async function Round1EvaluationFormPage({ params }: { params: Pro
 
   if (criteriaList.length === 0) {
     criteriaList = [
-      { id: 'c1', name: 'Innovation & Technical Feasibility', max_score: 25, weight: 1.0 },
-      { id: 'c2', name: 'Problem Statement Alignment', max_score: 25, weight: 1.0 },
-      { id: 'c3', name: 'Prototype / Proof of Concept', max_score: 25, weight: 1.0 },
-      { id: 'c4', name: 'Presentation & Communication', max_score: 25, weight: 1.0 },
+      { id: 'c1', name: 'Innovation & Technical Feasibility', max_score: 25, weight: 1.0, round: 1 },
+      { id: 'c2', name: 'Problem Statement Alignment', max_score: 25, weight: 1.0, round: 1 },
+      { id: 'c3', name: 'Prototype / Proof of Concept', max_score: 25, weight: 1.0, round: 1 },
+      { id: 'c4', name: 'Presentation & Communication', max_score: 25, weight: 1.0, round: 1 },
     ];
   }
 
@@ -189,7 +191,7 @@ export default async function Round1EvaluationFormPage({ params }: { params: Pro
         </Link>
         <div className="flex items-center gap-2">
           {isLocked && <Badge variant="rose" glow>🔒 SCORECARD LOCKED</Badge>}
-          <Badge variant={teamDetails.status as any} glow>
+          <Badge variant={teamDetails.status as 'shortlisted' | 'registered' | 'round1_pending' | 'selected' | 'standby'} glow>
             {teamDetails.status.replace('_', ' ').toUpperCase()}
           </Badge>
         </div>
@@ -217,7 +219,7 @@ export default async function Round1EvaluationFormPage({ params }: { params: Pro
               <span className="text-xs font-semibold uppercase text-slate-400 block mb-2">Student Roster:</span>
               <div className="space-y-2">
                 {teamDetails.students && teamDetails.students.length > 0 ? (
-                  teamDetails.students.map((student: any) => (
+                  teamDetails.students.map((student: StudentRow) => (
                     <div key={student.id} className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 text-xs">
                       <div className="font-semibold text-slate-200">{student.name}</div>
                       <div className="text-[10px] text-slate-500 font-mono flex items-center justify-between mt-0.5">

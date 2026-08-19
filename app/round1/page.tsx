@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
+import type { TeamRow, StudentRow } from '@/lib/schemas';
+
+export const dynamic = 'force-dynamic';
 
 const evaluatorNavItems = [
   { label: 'Assigned Teams', href: '/round1', icon: '📝' },
@@ -14,7 +17,7 @@ const evaluatorNavItems = [
 
 export default async function Round1DashboardPage() {
   const session = await requireAuth(['evaluator', 'admin']);
-  let assignedTeams: any[] = [];
+  let assignedTeams: TeamRow[] = [];
 
   try {
     const supabase = await createClient();
@@ -78,7 +81,7 @@ export default async function Round1DashboardPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-xs text-cyan-400 font-bold">{team.team_code}</span>
-                  <Badge variant={team.status as any} glow>
+                  <Badge variant={team.status as 'shortlisted' | 'registered' | 'round1_pending' | 'selected' | 'standby'} glow>
                     {team.status.replace('_', ' ').toUpperCase()}
                   </Badge>
                 </div>
@@ -92,7 +95,7 @@ export default async function Round1DashboardPage() {
                 </span>
                 <div className="space-y-1">
                   {team.students && team.students.length > 0 ? (
-                    team.students.map((student: any) => (
+                    team.students.map((student: StudentRow) => (
                       <div key={student.id} className="text-xs text-slate-300 flex items-center justify-between">
                         <span>{student.name}</span>
                         <span className="font-mono text-slate-500">{student.roll_number}</span>

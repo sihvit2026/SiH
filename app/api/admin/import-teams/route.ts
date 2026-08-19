@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       if (!row.team_name || !row.team_code) continue;
 
       // Upsert team
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: team, error: teamErr } = await (supabase.from('teams') as any)
         .upsert({
           team_name: row.team_name,
@@ -39,6 +40,7 @@ export async function POST(req: Request) {
 
       // If student info exists, insert student
       if (team && row.student_name) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (supabase.from('students') as any)
           .insert({
             team_id: team.id,
@@ -50,8 +52,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, importedCount: rows.length });
-  } catch (err: any) {
+  } catch (err) {
     console.error('Import API error:', err);
-    return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Server error' }, { status: 500 });
   }
 }

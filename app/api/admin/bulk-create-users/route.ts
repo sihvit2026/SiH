@@ -60,6 +60,7 @@ export async function POST(req: Request) {
       const { name, role } = rowParsed.data;
 
       // Check for duplicate by name (approximate dedup)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: existing } = await (adminClient.from('evaluators') as any)
         .select('id')
         .eq('name', name)
@@ -110,6 +111,7 @@ export async function POST(req: Request) {
       const userId = authData.user.id;
 
       // Insert evaluators row
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error: evalError } = await (adminClient.from('evaluators') as any).insert({
         id: userId,
         name,
@@ -153,8 +155,8 @@ export async function POST(req: Request) {
         failed: results.filter((r) => r.status === 'failed').length,
       },
     });
-  } catch (err: any) {
+  } catch (err) {
     console.error('bulk-create-users error:', err);
-    return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Server error' }, { status: 500 });
   }
 }

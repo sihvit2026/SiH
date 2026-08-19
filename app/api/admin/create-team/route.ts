@@ -17,6 +17,7 @@ export async function POST(req: Request) {
     }
 
     const supabase = createAdminClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase.from('teams') as any)
       .insert({
         team_name,
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, team: data });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Server error' }, { status: 500 });
   }
 }
