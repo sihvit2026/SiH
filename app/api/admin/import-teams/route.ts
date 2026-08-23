@@ -19,6 +19,19 @@ export async function POST(req: Request) {
 
     const supabase = createAdminClient();
 
+    // Fetch the current/latest event to link teams
+    const { data: event } = await supabase
+      .from('events')
+      .select('id')
+      .in('status', ['upcoming', 'ongoing'])
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (!event) {
+      return NextResponse.json({ error: 'No active event found. Please create an event first.' }, { status: 400 });
+    }
+
     for (const row of rows) {
       if (!row.team_name || !row.team_code) continue;
 
@@ -26,10 +39,11 @@ export async function POST(req: Request) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: team, error: teamErr } = await (supabase.from('teams') as any)
         .upsert({
+          event_id: event.id,
           team_name: row.team_name,
           team_code: row.team_code,
           status: 'registered',
-        }, { onConflict: 'team_code' })
+        }, { onConflict: 'event_id, team_code' })
         .select('id')
         .single();
 

@@ -66,6 +66,7 @@ export interface StudentRow {
   name: string;
   roll_number?: string;
   email?: string;
+  is_leader?: boolean;
 }
 
 export interface TeamRow {
@@ -75,6 +76,8 @@ export interface TeamRow {
   status: string;
   created_at?: string;
   students?: StudentRow[];
+  problem_statement_id?: string;
+  problem_statement?: ProblemStatementRow;
 }
 
 export interface AssignmentRow {
@@ -129,4 +132,17 @@ export interface ScoreRow {
 
 export interface CommentRow {
   comment: string;
+}
+
+export interface ProblemStatementRow {
+  id: string;
+  event_id: string;
+  statement_code: string;
+  title: string;
+  category?: string;
+  theme?: string;
+  organization?: string;
+  description?: string;
+  created_at?: string;
+  updated_at?: string;
 }

@@ -37,7 +37,7 @@ export const Shell: React.FC<ShellProps> = ({
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-950 synthwave-grid text-slate-100 font-sans">
+    <div className="min-h-screen flex bg-slate-50 text-slate-900 font-sans">
       {/* Sidebar */}
       <Sidebar
         navItems={navItems}

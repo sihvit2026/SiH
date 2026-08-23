@@ -25,17 +25,25 @@ export async function getCurrentUser(): Promise<CurrentUserSession | null> {
 
     if (error || !user) return null;
 
-    // Check profiles table first for admin/data_operator/viewer
-    // The profiles table has RLS: users can only read their own row.
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('name, role')
-      .eq('id', user.id)
-      .single();
+    // Run both table lookups in parallel — they are independent queries.
+    // profiles table: admin/data_operator/viewer roles (RLS: own row only)
+    // evaluators table: evaluator/jury roles (RLS: own row only)
+    const [{ data: profile }, { data: evaluator }] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select('name, role')
+        .eq('id', user.id)
+        .single(),
+      supabase
+        .from('evaluators')
+        .select('name, role, round2_attendance')
+        .eq('id', user.id)
+        .single(),
+    ]);
 
+    // profiles table takes priority (admin/data_operator/viewer)
     if (profile && profile.role) {
       const role = profile.role as UserRole;
-      // Validate the role is one of the known privileged roles
       if (['admin', 'data_operator', 'viewer'].includes(role)) {
         return {
           user: { id: user.id, email: user.email },
@@ -46,13 +54,7 @@ export async function getCurrentUser(): Promise<CurrentUserSession | null> {
       }
     }
 
-    // Check evaluators table for evaluator/jury roles
-    const { data: evaluator } = await supabase
-      .from('evaluators')
-      .select('name, role, round2_attendance')
-      .eq('id', user.id)
-      .single();
-
+    // evaluators table for evaluator/jury roles
     if (evaluator && evaluator.role) {
       const role = evaluator.role as UserRole;
       if (['evaluator', 'jury'].includes(role)) {
@@ -66,8 +68,8 @@ export async function getCurrentUser(): Promise<CurrentUserSession | null> {
       }
     }
 
-    // Authenticated but no role found — return viewer as safe minimum
-    // Do NOT fall back to 'admin'. If a user has no profile row, they get no access.
+    // Authenticated but no role found — no access.
+    // SECURITY: Never falls back to 'admin'. Unknown authenticated users get null.
     return null;
   } catch (err) {
     console.error('Error in getCurrentUser:', err);

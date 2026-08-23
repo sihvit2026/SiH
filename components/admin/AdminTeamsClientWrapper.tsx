@@ -48,8 +48,8 @@ export const AdminTeamsClientWrapper: React.FC<{ children: React.ReactNode }> = 
     <>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-100">SIH Team Master Index</h1>
-          <p className="text-xs text-slate-400">View participating teams, SIH IDs, student members, and round statuses</p>
+          <h1 className="text-2xl font-bold text-slate-900">SIH Team Master Index</h1>
+          <p className="text-sm text-slate-500 mt-1">View participating teams, SIH IDs, student members, and round statuses</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={() => setIsCsvModalOpen(true)}>

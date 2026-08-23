@@ -2,119 +2,74 @@
 
 @layer base {
   :root {
-    --bg-dark: #090a10;
-    --bg-card: rgba(18, 22, 36, 0.75);
-    --bg-card-hover: rgba(26, 32, 53, 0.85);
-    --border-glow: rgba(102, 252, 241, 0.2);
-    --neon-cyan: #00f0ff;
-    --neon-magenta: #ff007f;
-    --neon-purple: #9d4edd;
-    --neon-amber: #ffb703;
-    --neon-green: #39ff14;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
+    --color-primary: #1e3a5f;
+    --color-primary-hover: #15294a;
+    --color-accent: #2563eb;
+    --color-border: #d1d5db;
+    --color-bg: #f5f7fa;
+    --color-surface: #ffffff;
+    --color-text: #1e293b;
+    --color-text-muted: #64748b;
   }
 
   body {
-    background-color: var(--bg-dark);
-    color: var(--text-primary);
-    font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-geist-sans), 'Inter', system-ui, -apple-system, sans-serif;
     min-height: 100vh;
-    background-image: 
-      radial-gradient(circle at 50% 0%, rgba(157, 78, 221, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 100% 100%, rgba(0, 240, 255, 0.08) 0%, transparent 40%),
-      linear-gradient(to bottom, rgba(9, 10, 16, 0.8), rgba(9, 10, 16, 0.95));
-    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 { font-weight: 700; color: var(--color-text); }
+
+  a { color: inherit; }
+
+  /* Remove all blue highlight from inputs */
+  *:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
   }
 }
 
-/* Synthwave Grid Pattern */
-.synthwave-grid {
-  background-size: 40px 40px;
-  background-image: 
-    linear-gradient(to right, rgba(0, 240, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+/* ─── Card surface ─────────────────────────────────────────── */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
-/* Glassmorphism Surface */
+/* Legacy alias — kept so old .glass-panel usages don't break layout */
 .glass-panel {
-  background: var(--bg-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
-.glass-panel-hover {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+.glass-panel-hover,
+.glass-panel-hover:hover {
+  transition: box-shadow 0.15s ease;
 }
 .glass-panel-hover:hover {
-  background: var(--bg-card-hover);
-  border-color: rgba(0, 240, 255, 0.3);
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.15), 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* Synthwave Neon Glows */
-.glow-cyan {
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.35);
+/* Strip any remaining glow helpers */
+.glow-cyan, .glow-magenta, .glow-purple {
+  border-color: var(--color-border);
+  box-shadow: none;
 }
 
-.glow-magenta {
-  box-shadow: 0 0 15px rgba(255, 0, 127, 0.35);
-}
+/* ─── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-.glow-purple {
-  box-shadow: 0 0 15px rgba(157, 78, 221, 0.35);
-}
-
-.text-gradient-cyan {
-  background: linear-gradient(135deg, #00f0ff 0%, #7000ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.text-gradient-magenta {
-  background: linear-gradient(135deg, #ff007f 0%, #7000ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(9, 10, 16, 0.6);
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 240, 255, 0.2);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 240, 255, 0.5);
-}
-
-/* Print & PDF Export Formatting */
+/* ─── Print ─────────────────────────────────────────────────── */
 @media print {
-  body {
-    background: #ffffff !important;
-    color: #000000 !important;
-  }
-  .print\:hidden, aside, header {
-    display: none !important;
-  }
-  .glass-panel {
-    background: #ffffff !important;
-    border: 1px solid #cccccc !important;
-    box-shadow: none !important;
-    color: #000000 !important;
-  }
-  h1, h2, h3, h4, p, td, th {
-    color: #000000 !important;
-  }
+  body { background: #fff !important; color: #000 !important; }
+  .print\:hidden, aside, header { display: none !important; }
+  .card, .glass-panel { background: #fff !important; border: 1px solid #ccc !important; box-shadow: none !important; }
 }

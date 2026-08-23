@@ -16,18 +16,14 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 }) => {
   const variantStyles = {
     text: 'h-4 w-full rounded',
-    rectangular: 'rounded-lg',
+    rectangular: 'rounded',
     circular: 'rounded-full',
   };
 
   return (
     <div
-      className={`bg-slate-800/60 animate-pulse border border-slate-700/30 ${variantStyles[variant]} ${className}`}
-      style={{
-        width,
-        height,
-        ...style,
-      }}
+      className={`bg-slate-200 animate-pulse ${variantStyles[variant]} ${className}`}
+      style={{ width, height, ...style }}
       {...props}
     />
   );

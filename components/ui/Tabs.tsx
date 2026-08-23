@@ -16,40 +16,31 @@ interface TabsProps {
   className?: string;
 }
 
-export const Tabs: React.FC<TabsProps> = ({
-  tabs,
-  activeTab,
-  onChange,
-  className = '',
-}) => {
-  return (
-    <div className={`flex items-center space-x-1 border-b border-slate-800/80 pb-px overflow-x-auto ${className}`}>
-      {tabs.map((tab) => {
-        const isActive = activeTab === tab.id;
-        return (
-          <button
-            key={tab.id}
-            onClick={() => onChange(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 transition-all whitespace-nowrap ${
-              isActive
-                ? 'border-cyan-400 text-cyan-300 bg-cyan-950/20 shadow-[0_4px_12px_rgba(0,240,255,0.15)]'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
-            }`}
-          >
-            {tab.icon && <span className="text-current">{tab.icon}</span>}
-            <span>{tab.label}</span>
-            {typeof tab.count === 'number' && (
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full ${
-                  isActive ? 'bg-cyan-500/20 text-cyan-300' : 'bg-slate-800 text-slate-400'
-                }`}
-              >
-                {tab.count}
-              </span>
-            )}
-          </button>
-        );
-      })}
-    </div>
-  );
-};
+export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, className = '' }) => (
+  <div className={`flex items-center border-b border-slate-200 overflow-x-auto ${className}`}>
+    {tabs.map((tab) => {
+      const isActive = activeTab === tab.id;
+      return (
+        <button
+          key={tab.id}
+          onClick={() => onChange(tab.id)}
+          className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
+            isActive
+              ? 'border-[#1e3a5f] text-[#1e3a5f]'
+              : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+          }`}
+        >
+          {tab.icon && <span>{tab.icon}</span>}
+          <span>{tab.label}</span>
+          {typeof tab.count === 'number' && (
+            <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+              isActive ? 'bg-[#1e3a5f] text-white' : 'bg-slate-100 text-slate-500'
+            }`}>
+              {tab.count}
+            </span>
+          )}
+        </button>
+      );
+    })}
+  </div>
+);

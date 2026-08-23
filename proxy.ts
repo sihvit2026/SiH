@@ -8,7 +8,7 @@ import { NextResponse, type NextRequest } from 'next/server';
  * IMPORTANT: This does NOT replace server-side requireAuth() calls.
  * It only ensures Supabase sessions are refreshed so cookies stay valid.
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(

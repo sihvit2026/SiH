@@ -1,0 +1,127 @@
+
+> sih-eval@0.1.0 lint
+> eslint
+
+
+/home/ajay/sih-eval/app/admin/assignments/page.tsx
+   3:10  warning  'Badge' is defined but never used         @typescript-eslint/no-unused-vars
+  21:20  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/admin/audit/page.tsx
+  20:13  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-explicit-any
+  53:30  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/home/ajay/sih-eval/app/admin/audit/page.tsx:53:30
+  51 |         operation: 'INSERT',
+  52 |         performed_by: '00000000-0000-0000-0000-000000000002',
+> 53 |         created_at: new Date(Date.now() - 3600000).toISOString(),
+     |                              ^^^^^^^^^^ Cannot call impure function
+  54 |         new_value: { team_id: 'team-1', score: 38, criteria_id: 'c5' },
+  55 |       },
+  56 |     ];  react-hooks/purity
+
+/home/ajay/sih-eval/app/admin/criteria/page.tsx
+  22:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/admin/evaluators/page.tsx
+  23:9   warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  30:43  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  42:19  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/admin/page.tsx
+  23:7   error    'stats' is never reassigned. Use 'const' instead                prefer-const
+  35:24  error    Unexpected any. Specify a different type                        @typescript-eslint/no-explicit-any
+  36:7   error    'teamStatusBreakdown' is never reassigned. Use 'const' instead  prefer-const
+  52:17  error    Unexpected any. Specify a different type                        @typescript-eslint/no-explicit-any
+  61:22  error    Unexpected any. Specify a different type                        @typescript-eslint/no-explicit-any
+  83:9   warning  'displayEvaluators' is assigned a value but never used          @typescript-eslint/no-unused-vars
+
+/home/ajay/sih-eval/app/admin/teams/page.tsx
+   22:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  114:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  127:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/api/admin/bulk-create-users/route.ts
+   63:75  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  113:77  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  156:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/api/admin/create-team/route.ts
+  20:62  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/api/admin/create-user/route.ts
+   5:10  warning  'z' is defined but never used                     @typescript-eslint/no-unused-vars
+  32:25  warning  'designation' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  59:75  error    Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+  87:17  error    Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/api/admin/import-teams/route.ts
+  26:79  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  53:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/api/admin/shortlist/route.ts
+  23:95  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  33:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/login/page.tsx
+  45:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/reports/page.tsx
+   18:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   19:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  139:99  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/round1/[teamId]/page.tsx
+    5:10  warning  'Button' is defined but never used                         @typescript-eslint/no-unused-vars
+   94:20  error    Unexpected any. Specify a different type                   @typescript-eslint/no-explicit-any
+   95:21  error    Unexpected any. Specify a different type                   @typescript-eslint/no-explicit-any
+   96:7   error    'existingScores' is never reassigned. Use 'const' instead  prefer-const
+  192:49  error    Unexpected any. Specify a different type                   @typescript-eslint/no-explicit-any
+  220:54  error    Unexpected any. Specify a different type                   @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/round1/page.tsx
+  17:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  81:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  95:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/round2/[teamId]/page.tsx
+  102:20  error  Unexpected any. Specify a different type                        @typescript-eslint/no-explicit-any
+  103:21  error  Unexpected any. Specify a different type                        @typescript-eslint/no-explicit-any
+  104:7   error  'existingScores' is never reassigned. Use 'const' instead       prefer-const
+  106:7   error  'isAttendancePresent' is never reassigned. Use 'const' instead  prefer-const
+  223:54  error  Unexpected any. Specify a different type                        @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/app/round2/page.tsx
+   18:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  113:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/components/admin/AdminEvaluatorsClientWrapper.tsx
+  18:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/components/admin/CsvImportModal.tsx
+   29:10  warning  'file' is assigned a value but never used     @typescript-eslint/no-unused-vars
+   56:11  warning  'headers' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  106:19  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/components/admin/ShortlistControlCard.tsx
+  35:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ajay/sih-eval/components/layout/Topbar.tsx
+  16:3  warning  'roleName' is defined but never used  @typescript-eslint/no-unused-vars
+  17:3  warning  'userName' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/ajay/sih-eval/components/ui/Input.tsx
+  17:3  warning  'className' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/ajay/sih-eval/components/ui/Select.tsx
+  20:3  warning  'className' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 62 problems (50 errors, 12 warnings)
+  5 errors and 0 warnings potentially fixable with the `--fix` option.
+

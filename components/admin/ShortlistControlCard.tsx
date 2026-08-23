@@ -40,15 +40,15 @@ export const ShortlistControlCard: React.FC<{ currentShortlisted: number }> = ({
   };
 
   return (
-    <Card glowColor="purple">
+    <Card>
       <CardHeader>
         <div>
-          <CardTitle className="text-purple-300">Configurable Top N Shortlisting</CardTitle>
+          <CardTitle className="text-slate-900">Configurable Top N Shortlisting</CardTitle>
           <CardDescription>
             Automatically rank eligible Round 1 teams by average score and promote Top N to Round 2
           </CardDescription>
         </div>
-        <Badge variant="purple" glow>
+        <Badge variant="purple">
           Currently Shortlisted: {currentShortlisted}
         </Badge>
       </CardHeader>
@@ -72,7 +72,7 @@ export const ShortlistControlCard: React.FC<{ currentShortlisted: number }> = ({
         </form>
 
         {feedback && (
-          <div className="p-3 rounded-lg bg-purple-950 border border-purple-500/40 text-xs font-medium text-purple-300">
+          <div className="p-3 rounded bg-purple-50 border border-purple-200 text-xs font-medium text-purple-700">
             {feedback}
           </div>
         )}

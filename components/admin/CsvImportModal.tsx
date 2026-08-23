@@ -133,27 +133,27 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
       }
     >
       <div className="space-y-4">
-        <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm space-y-2">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
             Select CSV File:
           </label>
           <input
             type="file"
             accept=".csv, .txt"
             onChange={handleFileChange}
-            className="text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyan-950 file:text-cyan-300 hover:file:bg-cyan-900"
+            className="text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           />
         </div>
 
         {importSummary && (
-          <div className="p-3 rounded-lg bg-cyan-950 border border-cyan-500/40 text-xs font-medium text-cyan-300">
+          <div className="p-3 rounded bg-blue-50 border border-blue-200 text-xs font-medium text-blue-800">
             {importSummary}
           </div>
         )}
 
         {parsedRows.length > 0 && (
           <div className="space-y-2">
-            <span className="text-xs font-semibold text-slate-300">
+            <span className="text-xs font-semibold text-slate-700">
               CSV Preview & Validation ({parsedRows.length} Rows Detected):
             </span>
             <TableContainer className="max-h-60 overflow-y-auto">
@@ -170,10 +170,10 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
                 <TableBody>
                   {parsedRows.map((row, idx) => (
                     <TableRow key={idx}>
-                      <TableCell className="font-mono text-xs text-cyan-400">{row.team_code}</TableCell>
-                      <TableCell className="font-semibold text-slate-200">{row.team_name}</TableCell>
-                      <TableCell className="text-xs text-slate-300">{row.student_name || '—'}</TableCell>
-                      <TableCell className="font-mono text-xs text-slate-400">{row.roll_number || '—'}</TableCell>
+                      <TableCell className="font-mono text-xs text-blue-600">{row.team_code}</TableCell>
+                      <TableCell className="font-semibold text-slate-900">{row.team_name}</TableCell>
+                      <TableCell className="text-xs text-slate-600">{row.student_name || '—'}</TableCell>
+                      <TableCell className="font-mono text-xs text-slate-500">{row.roll_number || '—'}</TableCell>
                       <TableCell>
                         {row.isValid ? (
                           <span className="text-xs font-bold text-emerald-400">✓ Valid</span>

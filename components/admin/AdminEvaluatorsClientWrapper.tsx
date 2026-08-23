@@ -58,8 +58,8 @@ export const AdminEvaluatorsClientWrapper: React.FC<{ children: React.ReactNode 
     <>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-100">Evaluator & Jury Roster</h1>
-          <p className="text-xs text-slate-400">
+          <h1 className="text-2xl font-bold text-slate-900">Evaluator & Jury Roster</h1>
+          <p className="text-sm text-slate-500 mt-1">
             Manage Round 1 evaluators and toggle Round 2 jury attendance (`round2_attendance = &apos;present&apos;`)
           </p>
         </div>
@@ -111,28 +111,28 @@ export const AdminEvaluatorsClientWrapper: React.FC<{ children: React.ReactNode 
           </form>
         ) : (
           <div className="space-y-4">
-            <div className="p-4 rounded-xl bg-emerald-950 border border-emerald-500/40 space-y-3">
-              <div className="flex items-center gap-2 text-emerald-400 font-semibold mb-2">
+            <div className="p-4 rounded bg-green-50 border border-green-200 space-y-3">
+              <div className="flex items-center gap-2 text-green-700 font-semibold mb-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Account Created Successfully!
               </div>
-              <p className="text-xs text-emerald-300/80 pb-2 border-b border-emerald-500/20">
+              <p className="text-xs text-green-800/80 pb-2 border-b border-green-200">
                 Please copy the credentials below. The password is NOT stored and cannot be retrieved later.
               </p>
               <div className="grid grid-cols-[100px_1fr] gap-2 text-xs">
-                <span className="text-emerald-400/60 font-medium">Name:</span>
-                <span className="text-slate-100 font-semibold">{credential.name}</span>
+                <span className="text-slate-500 font-medium">Name:</span>
+                <span className="text-slate-900 font-semibold">{credential.name}</span>
                 
-                <span className="text-emerald-400/60 font-medium">Role:</span>
-                <span className="text-slate-100 font-semibold uppercase">{credential.role}</span>
+                <span className="text-slate-500 font-medium">Role:</span>
+                <span className="text-slate-900 font-semibold uppercase">{credential.role}</span>
                 
-                <span className="text-emerald-400/60 font-medium">Username:</span>
-                <span className="text-emerald-300 font-mono font-bold bg-emerald-900/50 px-2 py-0.5 rounded">{credential.username}</span>
+                <span className="text-slate-500 font-medium">Username:</span>
+                <span className="text-slate-900 font-mono font-bold bg-white px-2 py-0.5 rounded border border-slate-200">{credential.username}</span>
                 
-                <span className="text-emerald-400/60 font-medium">Password:</span>
-                <span className="text-white font-mono font-bold bg-emerald-900/80 px-2 py-0.5 rounded border border-emerald-500/50">{credential.password}</span>
+                <span className="text-slate-500 font-medium">Password:</span>
+                <span className="text-slate-900 font-mono font-bold bg-white px-2 py-0.5 rounded border border-slate-200">{credential.password}</span>
               </div>
             </div>
             <div className="flex justify-end pt-2">

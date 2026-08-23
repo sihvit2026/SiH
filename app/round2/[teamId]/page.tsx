@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/Input';
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { CriterionRow, StudentRow, ScoreRow, CommentRow } from '@/lib/schemas';
 
@@ -112,25 +113,24 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
   try {
     const supabase = await createClient();
 
-    // Check lock
-    const { data: lock } = await supabase
-      .from('evaluation_locks')
-      .select('status')
-      .eq('evaluator_id', session.user.id)
-      .eq('team_id', teamId)
-      .eq('round', 2)
-      .single();
-
-    if (lock && lock.status === 'locked') {
-      isLocked = true;
-    }
-
-    const [{ data: team }, { data: criteria }, { data: scores }, { data: comments }] = await Promise.all([
+    // Fire all queries in parallel — lock check and all data fetches run simultaneously.
+    const [
+      { data: lock },
+      { data: team },
+      { data: criteria },
+      { data: scores },
+      { data: comments },
+    ] = await Promise.all([
+      supabase.from('evaluation_locks').select('status').eq('evaluator_id', session.user.id).eq('team_id', teamId).eq('round', 2).single(),
       supabase.from('teams').select('*, students(*)').eq('id', teamId).single(),
       supabase.from('criteria').select('*').eq('round', 2),
       supabase.from('round2_scores').select('*').eq('team_id', teamId).eq('jury_id', session.user.id),
       supabase.from('round2_comments').select('*').eq('team_id', teamId).eq('jury_id', session.user.id).order('created_at', { ascending: false }).limit(1),
     ]);
+
+    if (lock && lock.status === 'locked') {
+      isLocked = true;
+    }
 
     teamDetails = team;
     criteriaList = criteria || [];
@@ -148,26 +148,9 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
     console.error('Error fetching Round 2 evaluation details:', err);
   }
 
-  // Fallback demo state
-  if (!teamDetails) {
-    teamDetails = {
-      id: teamId,
-      team_name: 'CyberGuard AI',
-      team_code: 'SIH2026-001',
-      status: 'shortlisted',
-      students: [
-        { id: 's1', name: 'Aarav Sharma', roll_number: '21BCE012', email: 'aarav@vit.ac.in' },
-        { id: 's2', name: 'Ananya Verma', roll_number: '21BCE045', email: 'ananya@vit.ac.in' },
-      ],
-    };
-  }
-
-  if (criteriaList.length === 0) {
-    criteriaList = [
-      { id: 'c5', name: 'Live Working Prototype Demo', max_score: 40, weight: 1.0, round: 2 },
-      { id: 'c6', name: 'System Architecture & Scalability', max_score: 30, weight: 1.0, round: 2 },
-      { id: 'c7', name: 'Jury Q&A Defense & Feasibility', max_score: 30, weight: 1.0, round: 2 },
-    ];
+  // If team is not found or no criteria are setup, return 404
+  if (!teamDetails || criteriaList.length === 0) {
+    notFound();
   }
 
   const totalMaxScore = criteriaList.reduce((acc, curr) => acc + Number(curr.max_score), 0);
@@ -181,19 +164,19 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
       navItems={juryNavItems}
     >
       <div className="flex items-center justify-between">
-        <Link href="/round2" className="text-xs text-purple-400 hover:text-purple-300 font-semibold flex items-center gap-1">
+        <Link href="/round2" className="text-xs text-purple-700 hover:text-purple-800 font-semibold flex items-center gap-1">
           ← Back to Shortlisted Teams
         </Link>
         <div className="flex items-center gap-2">
-          {isLocked && <Badge variant="rose" glow>🔒 SCORECARD LOCKED</Badge>}
-          <Badge variant="shortlisted" glow>
+          {isLocked && <Badge variant="rose">🔒 SCORECARD LOCKED</Badge>}
+          <Badge variant="shortlisted">
             SHORTLISTED FOR ROUND 2
           </Badge>
         </div>
       </div>
 
       {!isAttendancePresent && (
-        <div className="p-4 rounded-xl bg-rose-950/80 border border-rose-500/50 text-rose-300 text-xs space-y-1">
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs space-y-1">
           <span className="font-bold block">🔴 Jury Attendance Absent</span>
           <p>
             Your attendance status is currently marked as `absent`. You cannot enter or submit scores until the administrator updates your attendance to `present`.
@@ -202,7 +185,7 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
       )}
 
       {isLocked && (
-        <div className="p-4 rounded-xl bg-amber-950/80 border border-amber-500/50 text-amber-300 text-xs space-y-1">
+        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-xs space-y-1">
           <span className="font-bold block">🔒 Scorecard Locked</span>
           <p>
             Your jury score for this team has been submitted and locked. Contact an administrator if changes are required.
@@ -214,18 +197,18 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
         {/* Left: Team Info */}
         <Card className="lg:col-span-1 h-fit">
           <CardHeader>
-            <span className="text-xs font-mono text-purple-400 font-bold">{teamDetails.team_code}</span>
+            <span className="text-xs font-mono text-purple-700 font-bold">{teamDetails.team_code}</span>
             <CardTitle>{teamDetails.team_name}</CardTitle>
             <CardDescription>Shortlisted Finalist Team</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <span className="text-xs font-semibold uppercase text-slate-400 block mb-2">Student Members:</span>
+              <span className="text-xs font-semibold uppercase text-slate-500 block mb-2">Student Members:</span>
               <div className="space-y-2">
                 {teamDetails.students && teamDetails.students.length > 0 ? (
                   teamDetails.students.map((student: StudentRow) => (
-                    <div key={student.id} className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 text-xs">
-                      <div className="font-semibold text-slate-200">{student.name}</div>
+                    <div key={student.id} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+                      <div className="font-semibold text-slate-900">{student.name}</div>
                       <div className="text-[10px] text-slate-500 font-mono flex items-center justify-between mt-0.5">
                         <span>{student.roll_number}</span>
                         <span>{student.email}</span>
@@ -238,9 +221,9 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
               </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-purple-950/30 border border-purple-500/20 text-xs text-purple-300 space-y-1">
+            <div className="p-3 rounded-lg bg-purple-50 border border-purple-200 text-xs text-purple-700 space-y-1">
               <span className="font-bold block">⚖️ Round 2 Jury Schema Contract</span>
-              <p className="text-[11px] text-purple-200/80">
+              <p className="text-[11px] text-purple-600">
                 Scores and comments use `round2_scores.jury_id` and `round2_comments.jury_id` strictly, and enforce `round2_attendance = &apos;present&apos;`.
               </p>
             </div>
@@ -248,9 +231,9 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
         </Card>
 
         {/* Right: Jury Form */}
-        <Card glowColor="purple" className="lg:col-span-2">
+        <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-purple-300">Round 2 Jury Scorecard</CardTitle>
+            <CardTitle className="text-slate-900">Round 2 Jury Scorecard</CardTitle>
             <CardDescription>Enter final jury scores (Total Max: {totalMaxScore} pts)</CardDescription>
           </CardHeader>
           <CardContent>
@@ -259,12 +242,12 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
 
               <div className="space-y-4">
                 {criteriaList.map((crit) => (
-                  <div key={crit.id} className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+                  <div key={crit.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
                     <div className="flex items-center justify-between">
-                      <label htmlFor={`score_${crit.id}`} className="text-sm font-bold text-slate-200">
+                      <label htmlFor={`score_${crit.id}`} className="text-sm font-bold text-slate-900">
                         {crit.name}
                       </label>
-                      <span className="text-xs font-mono text-purple-400">Max: {crit.max_score} pts</span>
+                      <span className="text-xs font-mono text-purple-700">Max: {crit.max_score} pts</span>
                     </div>
                     <Input
                       id={`score_${crit.id}`}
@@ -283,7 +266,7 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="comment" className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                <label htmlFor="comment" className="block text-xs font-semibold uppercase tracking-wider text-slate-700">
                   Jury Deliberation & Recommendations
                 </label>
                 <textarea
@@ -293,17 +276,17 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
                   defaultValue={existingComment}
                   placeholder="Record final jury notes, prototype evaluation observations, and award recommendations..."
                   disabled={!isAttendancePresent || (isLocked && session.role !== 'admin')}
-                  className="w-full bg-slate-950/80 text-slate-100 text-sm rounded-lg border border-slate-800 p-3 focus:border-purple-400 focus:ring-2 focus:ring-purple-500/30 focus:outline-none disabled:opacity-50"
+                  className="w-full bg-white text-slate-900 text-sm rounded-lg border border-slate-300 p-3 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none disabled:opacity-50 shadow-sm"
                 />
               </div>
 
               {isAttendancePresent && (!isLocked || session.role === 'admin') && (
-                <div className="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+                <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
                   <button
                     type="submit"
                     name="actionType"
                     value="draft"
-                    className="px-4 py-2 rounded-lg bg-slate-800 text-slate-200 text-xs font-bold hover:bg-slate-700 transition"
+                    className="px-4 py-2 rounded-lg bg-slate-100 border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-200 transition"
                   >
                     💾 Save Draft
                   </button>
@@ -311,7 +294,7 @@ export default async function Round2JuryEvaluationFormPage({ params }: { params:
                     type="submit"
                     name="actionType"
                     value="final"
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-600 text-slate-950 font-black text-xs hover:shadow-[0_0_15px_rgba(157,78,221,0.4)] transition"
+                    className="px-4 py-2 rounded-lg bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 shadow-sm transition"
                   >
                     ⚖️ Submit Final Jury Score
                   </button>

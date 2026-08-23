@@ -50,29 +50,29 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-950 synthwave-grid">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
       <div className="w-full max-w-md space-y-6">
         {/* Logo & Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 via-fuchsia-500 to-purple-600 p-0.5 shadow-[0_0_30px_rgba(0,240,255,0.4)] mb-2">
-            <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-              <span className="font-mono font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-purple-400">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600 shadow-md mb-2">
+            <div className="w-[60px] h-[60px] bg-white rounded-xl flex items-center justify-center">
+              <span className="font-bold text-2xl text-blue-600">
                 SIH
               </span>
             </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
             SIH EVALUATION CENTER
           </h1>
-          <p className="text-xs text-slate-400 font-mono tracking-wide">
-            VIT DIGITAL EVALUATION PLATFORM
+          <p className="text-xs text-slate-500 font-semibold tracking-wide uppercase">
+            VIT Digital Evaluation Platform
           </p>
         </div>
 
         {/* Login Card */}
-        <Card glowColor="cyan" className="border-cyan-500/30">
-          <CardHeader className="text-center border-b border-slate-800/80 mb-4">
-            <CardTitle className="justify-center text-xl text-cyan-300">
+        <Card className="border-slate-200 shadow-xl">
+          <CardHeader className="text-center border-b border-slate-100 mb-4">
+            <CardTitle className="justify-center text-xl text-slate-900">
               Sign In to Platform
             </CardTitle>
             <CardDescription className="text-center">
@@ -114,8 +114,8 @@ export default function LoginPage() {
               {message && (
                 <div className={`p-3 rounded-lg text-xs font-medium border ${
                   message.type === 'success'
-                    ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300'
-                    : 'bg-rose-950/80 border-rose-500/50 text-rose-300'
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                    : 'bg-red-50 border-red-200 text-red-700'
                 }`}>
                   {message.text}
                 </div>
@@ -131,7 +131,7 @@ export default function LoginPage() {
             </form>
           </CardContent>
 
-          <CardFooter className="justify-center border-t border-slate-800/80 pt-4 text-[11px] text-slate-500">
+          <CardFooter className="justify-center border-t border-slate-100 pt-4 text-[11px] text-slate-400">
             Encrypted Session · Role-Based Access Control · Row Level Security Enforced
           </CardFooter>
         </Card>
