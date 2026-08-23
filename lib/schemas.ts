@@ -63,20 +63,24 @@ export interface EvaluatorRow {
 
 export interface StudentRow {
   id: string;
+  team_id: string;
   name: string;
-  roll_number?: string;
-  email?: string;
-  is_leader?: boolean;
+  roll_number: string | null;
+  email: string | null;
+  is_leader: boolean;
+  created_at?: string;
 }
 
 export interface TeamRow {
   id: string;
+  event_id: string;
   team_name: string;
   team_code: string;
   status: string;
   created_at?: string;
+  updated_at?: string;
   students?: StudentRow[];
-  problem_statement_id?: string;
+  problem_statement_id: string | null;
   problem_statement?: ProblemStatementRow;
 }
 
@@ -101,26 +105,26 @@ export interface AuditLogRow {
   id: string;
   table_name: string;
   operation: string;
-  performed_by: string;
+  performed_by: string | null;
   created_at: string;
-  new_value?: Record<string, unknown>;
-  old_value?: Record<string, unknown>;
+  new_value?: unknown;
+  old_value?: unknown;
 }
 
 export interface Round1AverageRow {
-  team_id: string;
-  team_name: string;
-  avg_score: number;
-  evaluator_count?: number;
-  score_count?: number;
+  team_id: string | null;
+  team_name: string | null;
+  avg_score: number | null;
+  evaluator_count?: number | null;
+  score_count?: number | null;
 }
 
 export interface Round2AverageRow {
-  team_id: string;
-  team_name: string;
-  avg_score: number;
-  jury_count?: number;
-  score_count?: number;
+  team_id: string | null;
+  team_name: string | null;
+  avg_score: number | null;
+  jury_count?: number | null;
+  score_count?: number | null;
   merit_rank?: number;
   result?: string;
 }
@@ -139,10 +143,10 @@ export interface ProblemStatementRow {
   event_id: string;
   statement_code: string;
   title: string;
-  category?: string;
-  theme?: string;
-  organization?: string;
-  description?: string;
+  category: string | null;
+  theme: string | null;
+  organization: string | null;
+  description: string | null;
   created_at?: string;
   updated_at?: string;
 }

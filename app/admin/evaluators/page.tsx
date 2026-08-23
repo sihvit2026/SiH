@@ -1,4 +1,5 @@
 import React from 'react';
+import { revalidatePath } from 'next/cache';
 import { Shell } from '@/components/layout/Shell';
 import { Badge } from '@/components/ui/Badge';
 import { TableContainer, Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/Table';

@@ -9,11 +9,15 @@
  * The client is a lazy singleton — initialised once on first access so that
  * the environment variable is only read at runtime, not at build time.
  */
-import { createClient as _createClient } from '@supabase/supabase-js'
+import { createClient as _createClient, type SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '../database.types'
 
-let _adminClient: ReturnType<typeof _createClient> | null = null
+// SupabaseClient<Database> is used explicitly because
+// `ReturnType<typeof _createClient<Database>>` is not valid TypeScript —
+// generic arguments cannot be passed inside a `typeof` expression.
+let _adminClient: SupabaseClient<Database> | null = null
 
-export function createAdminClient() {
+export function createAdminClient(): SupabaseClient<Database> {
   if (_adminClient) return _adminClient
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -26,7 +30,7 @@ export function createAdminClient() {
     )
   }
 
-  _adminClient = _createClient(url, serviceRoleKey, {
+  _adminClient = _createClient<Database>(url, serviceRoleKey, {
     auth: {
       // The admin client should not persist sessions or auto-refresh tokens.
       autoRefreshToken: false,
