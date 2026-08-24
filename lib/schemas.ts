@@ -65,22 +65,33 @@ export interface StudentRow {
   id: string;
   team_id: string;
   name: string;
-  roll_number: string | null;
   email: string | null;
+  roll_number: string | null;
   is_leader: boolean;
-  created_at?: string;
+  created_at: string;
+}
+
+export interface ProblemStatementRow {
+  id: string;
+  event_id: string;
+  statement_code: string;
+  title: string;
+  category: string | null;
+  theme: string | null;
+  organization: string | null;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface TeamRow {
   id: string;
-  event_id: string;
   team_name: string;
   team_code: string;
   status: string;
   created_at?: string;
-  updated_at?: string;
   students?: StudentRow[];
-  problem_statement_id: string | null;
+  problem_statement_id?: string | null;
   problem_statement?: ProblemStatementRow;
 }
 
@@ -89,8 +100,14 @@ export interface AssignmentRow {
   team_code?: string;
   team_name?: string;
   evaluator_name?: string;
-  teams?: { team_name: string; team_code: string };
-  evaluators?: { name: string; role: string };
+  teams?: {
+    team_name: string;
+    team_code: string;
+  };
+  evaluators?: {
+    name: string;
+    role: string;
+  };
 }
 
 export interface CriterionRow {
@@ -103,30 +120,32 @@ export interface CriterionRow {
 
 export interface AuditLogRow {
   id: string;
-  table_name: string;
   operation: string;
+  table_name: string;
   performed_by: string | null;
+  row_id: string | null;
+  old_value: unknown;
+  new_value: unknown;
   created_at: string;
-  new_value?: unknown;
-  old_value?: unknown;
 }
 
 export interface Round1AverageRow {
   team_id: string | null;
   team_name: string | null;
+  event_id: string | null;
   avg_score: number | null;
-  evaluator_count?: number | null;
-  score_count?: number | null;
+  evaluator_count: number | null;
+  score_count: number | null;
 }
 
 export interface Round2AverageRow {
   team_id: string | null;
   team_name: string | null;
+  event_id: string | null;
   avg_score: number | null;
-  jury_count?: number | null;
-  score_count?: number | null;
-  merit_rank?: number;
-  result?: string;
+  jury_count: number | null;
+  score_count: number | null;
+  result?: string | null;
 }
 
 export interface ScoreRow {
@@ -136,17 +155,4 @@ export interface ScoreRow {
 
 export interface CommentRow {
   comment: string;
-}
-
-export interface ProblemStatementRow {
-  id: string;
-  event_id: string;
-  statement_code: string;
-  title: string;
-  category: string | null;
-  theme: string | null;
-  organization: string | null;
-  description: string | null;
-  created_at?: string;
-  updated_at?: string;
 }

@@ -12,11 +12,15 @@ import type { Round1AverageRow, Round2AverageRow } from '@/lib/schemas';
 export const dynamic = 'force-dynamic';
 
 const reportsNavItems = [
-  { label: 'Overview Dashboard', href: '/admin', icon: '📊' },
+  { label: 'Dashboard', href: '/admin', icon: '📊' },
   { label: 'Teams & Members', href: '/admin/teams', icon: '👥' },
+  { label: 'Problem Statements', href: '/admin/problem-statements', icon: '📋' },
+  { label: 'Evaluators & Jury', href: '/admin/evaluators', icon: '🎓' },
+  { label: 'Criteria Builder', href: '/admin/criteria', icon: '🎯' },
+  { label: 'Round 1 Mapping', href: '/admin/assignments', icon: '📌' },
+  { label: 'Audit Trail', href: '/admin/audit', icon: '🛡️' },
   { label: 'Merit & Reports', href: '/reports', icon: '🏆' },
 ];
-
 export default async function ReportsPage() {
   const session = await requireAuth();
   let round1Averages: Round1AverageRow[] = [];

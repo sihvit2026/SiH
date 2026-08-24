@@ -9,6 +9,7 @@ import { requireAuth } from '@/lib/auth';
 import { AdminEvaluatorsClientWrapper } from '@/components/admin/AdminEvaluatorsClientWrapper';
 import { EmptyState } from '@/components/ui/EmptyState';
 import type { EvaluatorRow } from '@/lib/schemas';
+import { revalidatePath } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 

@@ -1,6 +1,14 @@
 import React from 'react';
 import { Shell } from '@/components/layout/Shell';
-import { TableContainer, Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/Table';
+import {
+  TableContainer,
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from '@/components/ui/Table';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAuth } from '@/lib/auth';
 import { ProblemStatementsClientWrapper } from '@/components/admin/ProblemStatementsClientWrapper';
@@ -26,87 +34,134 @@ export default async function AdminProblemStatementsPage() {
   const session = await requireAuth(['admin', 'data_operator']);
   const supabase = createAdminClient();
 
-  // Get active event
-  const { data: eventData } = await supabase
+  // Find the current event
+  const { data: eventData, error: eventError } = await supabase
     .from('events')
-    .select('id, name')
+    .select('id, name, status')
     .in('status', ['upcoming', 'ongoing'])
     .order('created_at', { ascending: false })
     .limit(1)
-    .single();
-
-  const eventId = eventData?.id || '00000000-0000-0000-0000-000000000000'; // Fallback so it doesn't crash if no event
+    .maybeSingle();
 
   let problemStatements: ProblemStatementRow[] = [];
 
-  try {
-    const { data } = await supabase
+  // Only query problem statements when a real event exists.
+  if (eventData?.id) {
+    const { data, error } = await supabase
       .from('problem_statements')
       .select('*')
-      .eq('event_id', eventId)
+      .eq('event_id', eventData.id)
       .order('statement_code', { ascending: true });
 
-    if (data && data.length > 0) {
-      problemStatements = data;
+    if (error) {
+      console.error('Failed to fetch problem statements:', error);
+    } else {
+      problemStatements = data ?? [];
     }
-  } catch (err) {
-    console.error('Failed to fetch problem statements:', err);
+  } else if (eventError) {
+    console.error('Failed to fetch active event:', eventError);
   }
-
-  // Fallback demo data removed
 
   return (
     <Shell
       title="Problem Statements"
-      roleName={session.role === 'admin' ? 'SIH Super Admin' : 'Data Operator'}
+      roleName={
+        session.role === 'admin'
+          ? 'SIH Super Admin'
+          : 'Data Operator'
+      }
       roleType="admin"
       userName={session.name}
       navItems={adminNavItems}
     >
-      <ProblemStatementsClientWrapper eventId={eventId}>
-        {problemStatements.length === 0 ? (
-          <EmptyState title="No Problem Statements Found" description="Add problem statements to this event." />
-        ) : (
-          <TableContainer>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Code & Title</TableHead>
-                  <TableHead>Category / Theme</TableHead>
-                  <TableHead>Organization</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {problemStatements.map((ps) => (
-                  <TableRow key={ps.id}>
-                    <TableCell>
-                      <div className="font-bold text-blue-600 text-xs font-mono">{ps.statement_code}</div>
-                      <div className="font-semibold text-slate-900 mt-1">{ps.title}</div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1.5">
-                        {ps.category && (
-                          <Badge variant="slate" className="mr-2">
+      {eventData?.id ? (
+        <ProblemStatementsClientWrapper eventId={eventData.id}>
+          {problemStatements.length === 0 ? (
+            <EmptyState
+              title="No Problem Statements Found"
+              description="Import the SIH problem statement CSV or add a problem statement manually."
+            />
+          ) : (
+            <TableContainer>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>PS Number</TableHead>
+                    <TableHead>Problem Statement</TableHead>
+                    <TableHead>Organization</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Theme</TableHead>
+                    <TableHead className="text-right">
+                      Actions
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+
+                <TableBody>
+                  {problemStatements.map((ps) => (
+                    <TableRow key={ps.id}>
+
+                      {/* PS Number */}
+                      <TableCell>
+                        <span className="font-mono font-bold text-blue-600 text-xs">
+                          {ps.statement_code}
+                        </span>
+                      </TableCell>
+
+                      {/* Problem Statement */}
+                      <TableCell>
+                        <div className="font-semibold text-slate-900">
+                          {ps.title}
+                        </div>
+
+                        {ps.description && (
+                          <div className="mt-1 text-xs text-slate-500 line-clamp-2 max-w-xl">
+                            {ps.description}
+                          </div>
+                        )}
+                      </TableCell>
+
+                      {/* Organization */}
+                      <TableCell className="text-sm text-slate-700">
+                        {ps.organization || '—'}
+                      </TableCell>
+
+                      {/* Category */}
+                      <TableCell>
+                        {ps.category ? (
+                          <Badge variant="slate">
                             {ps.category}
                           </Badge>
+                        ) : (
+                          '—'
                         )}
-                        <div className="text-xs text-slate-600">{ps.theme || '—'}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm text-slate-700">
-                      {ps.organization || '—'}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <ProblemStatementRowActions ps={ps} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </ProblemStatementsClientWrapper>
+                      </TableCell>
+
+                      {/* Theme */}
+                      <TableCell className="text-sm text-slate-600">
+                        {ps.theme || '—'}
+                      </TableCell>
+
+                      {/* Actions */}
+                      <TableCell className="text-right">
+                        <ProblemStatementRowActions ps={ps} />
+                      </TableCell>
+
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </ProblemStatementsClientWrapper>
+      ) : (
+        <div className="space-y-4">
+          <EmptyState
+            title="No Active Event"
+            description="Create an upcoming or ongoing event before importing problem statements."
+          />
+        </div>
+      )}
     </Shell>
   );
 }

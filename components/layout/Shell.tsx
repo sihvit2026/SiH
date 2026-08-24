@@ -33,12 +33,12 @@ export const Shell: React.FC<ShellProps> = ({
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push('/login');
+    router.push('/');
   };
 
   return (
     <div className="min-h-screen flex bg-slate-50 text-slate-900 font-sans">
-      {/* Sidebar */}
+      {/* Sidebar - Always receives the exact same navItems statically */}
       <Sidebar
         navItems={navItems}
         roleName={roleName}
