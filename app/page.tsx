@@ -85,48 +85,29 @@ export default function HomePage() {
 
       {/* Header */}
       <header className="border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 lg:px-16 h-20 flex items-center justify-between">
-
+        <div className="max-w-7xl mx-auto px-6 lg:px-16 h-20 flex items-center justify-center">
           <div className="flex items-center gap-4">
-
             {/* VIT × SIH */}
             <div className="flex items-center gap-3">
-
               <Image
                 src="/VIT-logo.png"
                 alt="VIT Pune"
-                width={220}
+                width={230}
                 height={150}
-                className="h-[60px] w-auto object-contain"
+                className="h-[78px] w-auto object-contain"
               />
-
               <span className="text-xl font-medium text-slate-400">
                 ×
               </span>
-
               <Image
                 src="/SIH.jpg"
                 alt="Smart India Hackathon"
-                width={80}
-                height={60}
-                className="h-[60px] w-auto object-contain"
+                width={100}
+                height={80}
+                className="h-[80px] w-auto object-contain"
               />
-
             </div>
-
-            {/* Portal Name */}
-            <div className="border-l border-slate-200 pl-4">
-              <h1 className="text-base font-semibold tracking-wide text-slate-900">
-                SIH EVALUATION PORTAL
-              </h1>
-
-              <p className="text-xs text-slate-500 mt-0.5">
-                Institutional Evaluation System
-              </p>
-            </div>
-
           </div>
-
         </div>
       </header>
 
@@ -221,8 +202,8 @@ export default function HomePage() {
                   {message && (
                     <div
                       className={`p-3 rounded-lg text-xs font-medium border ${message.type === 'success'
-                          ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                          : 'bg-red-50 border-red-200 text-red-700'
+                        ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                        : 'bg-red-50 border-red-200 text-red-700'
                         }`}
                     >
                       {message.text}
