@@ -25,7 +25,7 @@ const adminNavItems = [
   { label: 'Problem Statements', href: '/admin/problem-statements', icon: '📋' },
   { label: 'Evaluators & Jury', href: '/admin/evaluators', icon: '🎓' },
   { label: 'Criteria Builder', href: '/admin/criteria', icon: '🎯' },
-  { label: 'Round 1 Mapping', href: '/admin/assignments', icon: '📌' },
+  { label: 'Round 1 / Round 2 Mapping', href: '/admin/assignments', icon: '📌' },
   { label: 'Audit Trail', href: '/admin/audit', icon: '🛡️' },
   { label: 'Merit & Reports', href: '/reports', icon: '🏆' },
 ];

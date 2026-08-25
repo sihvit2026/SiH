@@ -448,6 +448,66 @@ export type Database = {
           },
         ]
       }
+      round2_assignments: {
+        Row: {
+          assigned_at: string
+          event_id: string
+          id: string
+          jury_id: string
+          team_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          event_id: string
+          id?: string
+          jury_id: string
+          team_id: string
+        }
+        Update: {
+          assigned_at?: string
+          event_id?: string
+          id?: string
+          jury_id?: string
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "round2_assignments_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "round2_assignments_jury_id_fkey"
+            columns: ["jury_id"]
+            isOneToOne: false
+            referencedRelation: "evaluators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "round2_assignments_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "team_round1_average"
+            referencedColumns: ["team_id"]
+          },
+          {
+            foreignKeyName: "round2_assignments_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "team_round2_average"
+            referencedColumns: ["team_id"]
+          },
+          {
+            foreignKeyName: "round2_assignments_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       round2_comments: {
         Row: {
           comment: string

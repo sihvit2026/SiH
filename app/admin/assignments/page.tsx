@@ -1,11 +1,8 @@
 import React from 'react';
 import { Shell } from '@/components/layout/Shell';
-import { TableContainer, Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/Table';
-import { Button } from '@/components/ui/Button';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAuth } from '@/lib/auth';
-import { EmptyState } from '@/components/ui/EmptyState';
-import type { AssignmentRow } from '@/lib/schemas';
+import { AssignmentsClientWrapper } from '@/components/admin/AssignmentsClientWrapper';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,86 +12,180 @@ const adminNavItems = [
   { label: 'Problem Statements', href: '/admin/problem-statements', icon: '📋' },
   { label: 'Evaluators & Jury', href: '/admin/evaluators', icon: '🎓' },
   { label: 'Criteria Builder', href: '/admin/criteria', icon: '🎯' },
-  { label: 'Round 1 Mapping', href: '/admin/assignments', icon: '📌' },
+  {
+    label: 'Round 1 / Round 2 Mapping',
+    href: '/admin/assignments',
+    icon: '📌',
+  },
   { label: 'Audit Trail', href: '/admin/audit', icon: '🛡️' },
   { label: 'Merit & Reports', href: '/reports', icon: '🏆' },
 ];
 
 export default async function AdminAssignmentsPage() {
-  const session = await requireAuth(['admin', 'data_operator']);
-  let assignments: AssignmentRow[] = [];
+  const session = await requireAuth([
+    'admin',
+    'data_operator',
+  ]);
+
+  const supabase = createAdminClient();
+
+  let teams: {
+    id: string;
+    team_code: string;
+    team_name: string;
+    status: string;
+  }[] = [];
+
+  let evaluators: {
+    id: string;
+    name: string;
+    role: 'evaluator' | 'jury';
+  }[] = [];
+
+  let round1Assignments: {
+    id: string;
+    team_id: string;
+    evaluator_id: string;
+    assigned_at?: string;
+    teams?: {
+      team_code: string;
+      team_name: string;
+      status?: string;
+    } | null;
+    evaluators?: {
+      name: string;
+      role: string;
+    } | null;
+  }[] = [];
+
+  let round2Assignments: {
+    id: string;
+    team_id: string;
+    jury_id: string;
+    assigned_at?: string;
+    teams?: {
+      team_code: string;
+      team_name: string;
+      status?: string;
+    } | null;
+    evaluators?: {
+      name: string;
+      role: string;
+    } | null;
+  }[] = [];
 
   try {
-    const supabase = createAdminClient();
-    const { data: fetchedAssignments } = await supabase
-      .from('round1_assignments')
-      .select('*, teams(team_name, team_code), evaluators(name, role)')
-      .order('assigned_at', { ascending: false });
+    const [
+      { data: fetchedTeams, error: teamError },
+      { data: fetchedEvaluators, error: evaluatorError },
+      {
+        data: fetchedRound1,
+        error: round1Error,
+      },
+      {
+        data: fetchedRound2,
+        error: round2Error,
+      },
+    ] = await Promise.all([
+      supabase
+        .from('teams')
+        .select(
+          'id, team_code, team_name, status'
+        )
+        .order('team_code', {
+          ascending: true,
+        }),
 
-    if (fetchedAssignments && fetchedAssignments.length > 0) {
-      assignments = fetchedAssignments;
+      supabase
+        .from('evaluators')
+        .select('id, name, role')
+        .order('name', {
+          ascending: true,
+        }),
+
+      supabase
+        .from('round1_assignments')
+        .select(
+          'id, team_id, evaluator_id, assigned_at, teams(team_code, team_name, status), evaluators(name, role)'
+        )
+        .order('assigned_at', {
+          ascending: false,
+        }),
+
+      supabase
+        .from('round2_assignments')
+        .select(
+          'id, team_id, jury_id, assigned_at, teams(team_code, team_name, status), evaluators(name, role)'
+        )
+        .order('assigned_at', {
+          ascending: false,
+        }),
+    ]);
+
+    if (teamError) {
+      console.error(
+        'Failed to fetch teams:',
+        teamError
+      );
+    } else if (fetchedTeams) {
+      teams = fetchedTeams;
     }
-  } catch (err) {
-    console.error('Failed to fetch assignments:', err);
-  }
 
-  // Fallback demo mapping list removed
+    if (evaluatorError) {
+      console.error(
+        'Failed to fetch evaluators:',
+        evaluatorError
+      );
+    } else if (fetchedEvaluators) {
+      evaluators = fetchedEvaluators as {
+        id: string;
+        name: string;
+        role: 'evaluator' | 'jury';
+      }[];
+    }
+
+    if (round1Error) {
+      console.error(
+        'Failed to fetch Round 1 assignments:',
+        round1Error
+      );
+    } else if (fetchedRound1) {
+      round1Assignments = fetchedRound1 as typeof round1Assignments;
+    }
+
+    if (round2Error) {
+      console.error(
+        'Failed to fetch Round 2 assignments:',
+        round2Error
+      );
+    } else if (fetchedRound2) {
+      round2Assignments = fetchedRound2 as typeof round2Assignments;
+    }
+  } catch (error) {
+    console.error(
+      'Failed to load mapping data:',
+      error
+    );
+  }
 
   return (
     <Shell
-      title="Round 1 Evaluator Mapping"
-      roleName={session.role === 'admin' ? 'SIH Super Admin' : 'Data Operator'}
+      title="Round 1 / Round 2 Mapping"
+      roleName={
+        session.role === 'admin'
+          ? 'SIH Super Admin'
+          : 'Data Operator'
+      }
       roleType="admin"
       userName={session.name}
       navItems={adminNavItems}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Round 1 Team-to-Evaluator Assignments</h1>
-          <p className="text-sm text-slate-500 mt-1">Map internal/external evaluators to specific teams (`round1_assignments` mapping)</p>
-        </div>
-        <Button variant="primary" size="sm">+ Map Evaluator to Team</Button>
-      </div>
-
-      {assignments.length === 0 ? (
-        <EmptyState title="No Assignments Found" description="Map evaluators to teams to start." />
-      ) : (
-        <TableContainer>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Team Code</TableHead>
-                <TableHead>Team Name</TableHead>
-                <TableHead>Assigned Evaluator</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {assignments.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-mono text-blue-600 font-bold text-xs">
-                    {item.teams?.team_code || item.team_code}
-                  </TableCell>
-                  <TableCell className="font-semibold text-slate-900">
-                    {item.teams?.team_name || item.team_name}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-blue-600" />
-                      <span className="text-slate-700 font-medium">{item.evaluators?.name || item.evaluator_name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="text-rose-400 hover:text-rose-300">
-                      Unassign
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+      <AssignmentsClientWrapper
+        teams={teams}
+        evaluators={evaluators}
+        round1Assignments={round1Assignments}
+        round2Assignments={round2Assignments}
+      />
     </Shell>
   );
 }

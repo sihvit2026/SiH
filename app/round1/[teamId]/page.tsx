@@ -93,7 +93,22 @@ export default async function Round1EvaluationFormPage({ params }: { params: Pro
   const resolvedParams = await params;
   const teamId = resolvedParams.teamId;
 
-  let teamDetails: { id: string; team_name: string; team_code: string; status: string; students?: StudentRow[] } | null = null;
+  let teamDetails: {
+    id: string;
+    team_name: string;
+    team_code: string;
+    status: string;
+    students?: StudentRow[];
+    problem_statement?: {
+      id: string;
+      statement_code: string;
+      title: string;
+      description: string | null;
+      theme: string | null;
+      category: string | null;
+      organization: string | null;
+    } | null;
+  } | null = null;
   let criteriaList: CriterionRow[] = [];
   const existingScores: Record<string, number> = {};
   let existingComment = '';
@@ -119,7 +134,7 @@ export default async function Round1EvaluationFormPage({ params }: { params: Pro
     ] = await Promise.all([
       assignmentPromise,
       supabase.from('evaluation_locks').select('status').eq('evaluator_id', session.user.id).eq('team_id', teamId).eq('round', 1).single(),
-      supabase.from('teams').select('*, students(*)').eq('id', teamId).single(),
+      supabase.from('teams').select('*, students(*),problem_statement:problem_statements(*)').eq('id', teamId).single(),
       supabase.from('criteria').select('*').eq('round', 1),
       supabase.from('round1_scores').select('*').eq('team_id', teamId).eq('evaluator_id', session.user.id),
       supabase.from('round1_comments').select('*').eq('team_id', teamId).eq('evaluator_id', session.user.id).order('created_at', { ascending: false }).limit(1),
@@ -195,6 +210,69 @@ export default async function Round1EvaluationFormPage({ params }: { params: Pro
             <CardDescription>Participating Team Profile</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Problem Statement */}
+            {teamDetails.problem_statement ? (
+              <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 space-y-2">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-700">
+                    Assigned Problem Statement
+                  </p>
+
+                  <p className="mt-1 font-mono text-xs font-bold text-blue-900">
+                    {teamDetails.problem_statement.statement_code}
+                  </p>
+
+                  <p className="mt-1 text-sm font-semibold text-slate-900">
+                    {teamDetails.problem_statement.title}
+                  </p>
+                </div>
+
+                {teamDetails.problem_statement.description && (
+                  <div className="pt-2 border-t border-blue-100">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                      Description
+                    </p>
+
+                    <p className="mt-1 text-xs leading-5 text-slate-700">
+                      {teamDetails.problem_statement.description}
+                    </p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 gap-1 pt-2">
+                  {teamDetails.problem_statement.theme && (
+                    <p className="text-[11px] text-slate-600">
+                      <span className="font-semibold">Theme:</span>{' '}
+                      {teamDetails.problem_statement.theme}
+                    </p>
+                  )}
+
+                  {teamDetails.problem_statement.category && (
+                    <p className="text-[11px] text-slate-600">
+                      <span className="font-semibold">Category:</span>{' '}
+                      {teamDetails.problem_statement.category}
+                    </p>
+                  )}
+
+                  {teamDetails.problem_statement.organization && (
+                    <p className="text-[11px] text-slate-600">
+                      <span className="font-semibold">Organization:</span>{' '}
+                      {teamDetails.problem_statement.organization}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+                <p className="text-xs font-semibold text-amber-800">
+                  No Problem Statement Assigned
+                </p>
+
+                <p className="mt-1 text-[11px] text-amber-700">
+                  Please contact the administrator.
+                </p>
+              </div>
+            )}
             <div>
               <span className="text-xs font-semibold uppercase text-slate-500 block mb-2">Student Roster:</span>
               <div className="space-y-2">
