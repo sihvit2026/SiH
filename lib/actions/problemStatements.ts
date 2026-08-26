@@ -50,11 +50,7 @@ export async function fetchProblemStatements(eventId: string) {
 
     const { data, error } = await supabase
       .from('problem_statements')
-<<<<<<< HEAD
       .select('id, event_id, statement_code, title, category, theme, organization, description, created_at, updated_at')
-=======
-      .select('*')
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
       .eq('event_id', eventId)
       .order('statement_code', { ascending: true });
 
@@ -102,11 +98,7 @@ export async function createProblemStatement(
         organization: data.organization?.trim() || null,
         description: data.description?.trim() || null,
       })
-<<<<<<< HEAD
       .select('id, event_id, statement_code, title, category, theme, organization, description, created_at, updated_at')
-=======
-      .select('*')
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
       .single();
 
     if (error) {
@@ -161,11 +153,7 @@ export async function updateProblemStatement(
         description: data.description?.trim() || null,
       })
       .eq('id', id)
-<<<<<<< HEAD
       .select('id, event_id, statement_code, title, category, theme, organization, description, created_at, updated_at')
-=======
-      .select('*')
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
       .single();
 
     if (error) {

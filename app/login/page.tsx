@@ -112,18 +112,10 @@ export default function LoginPage() {
               />
 
               {message && (
-<<<<<<< HEAD
                 <div className={`p-3 rounded-lg text-xs font-medium border ${message.type === 'success'
                     ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
                     : 'bg-red-50 border-red-200 text-red-700'
                   }`}>
-=======
-                <div className={`p-3 rounded-lg text-xs font-medium border ${
-                  message.type === 'success'
-                    ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                    : 'bg-red-50 border-red-200 text-red-700'
-                }`}>
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
                   {message.text}
                 </div>
               )}

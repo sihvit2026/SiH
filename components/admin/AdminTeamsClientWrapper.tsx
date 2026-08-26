@@ -17,17 +17,10 @@ interface ProblemStatementOption {
   id: string;
   statement_code: string;
   title: string;
-<<<<<<< HEAD
   description?: string | null;
   theme?: string | null;
   category?: string | null;
   organization?: string | null;
-=======
-  description: string | null;
-  theme: string | null;
-  category: string | null;
-  organization: string | null;
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 }
 
 interface ExistingTeam {

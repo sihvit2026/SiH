@@ -16,34 +16,17 @@ import { requireAuth } from '@/lib/auth';
 import { AdminTeamsClientWrapper } from '@/components/admin/AdminTeamsClientWrapper';
 import { EmptyState } from '@/components/ui/EmptyState';
 import type { TeamRow, StudentRow } from '@/lib/schemas';
-<<<<<<< HEAD
 import { getCachedProblemStatementOptions } from '@/lib/cached-queries';
 import { Pagination } from '@/components/ui/Pagination';
 
 export const dynamic = 'force-dynamic';
 
 import { adminNavItems } from '@/lib/nav';
-=======
-
-export const dynamic = 'force-dynamic';
-
-const adminNavItems = [
-  { label: 'Dashboard', href: '/admin', icon: '📊' },
-  { label: 'Teams & Members', href: '/admin/teams', icon: '👥' },
-  { label: 'Problem Statements', href: '/admin/problem-statements', icon: '📋' },
-  { label: 'Evaluators & Jury', href: '/admin/evaluators', icon: '🎓' },
-  { label: 'Criteria Builder', href: '/admin/criteria', icon: '🎯' },
-  { label: 'Round 1 Mapping', href: '/admin/assignments', icon: '📌' },
-  { label: 'Audit Trail', href: '/admin/audit', icon: '🛡️' },
-  { label: 'Merit & Reports', href: '/reports', icon: '🏆' },
-];
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 
 interface ProblemStatementOption {
   id: string;
   statement_code: string;
   title: string;
-<<<<<<< HEAD
   description?: string | null;
   theme?: string | null;
   category?: string | null;
@@ -62,25 +45,12 @@ export default async function AdminTeamsPage({ searchParams }: { searchParams: P
 
   let teams: TeamRow[] = [];
   let totalTeams = 0;
-=======
-  description: string | null;
-  theme: string | null;
-  category: string | null;
-  organization: string | null;
-}
-
-export default async function AdminTeamsPage() {
-  const session = await requireAuth(['admin', 'data_operator']);
-
-  let teams: TeamRow[] = [];
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
   let problemStatements: ProblemStatementOption[] = [];
 
   try {
     const supabase = createAdminClient();
 
     const [
-<<<<<<< HEAD
       { data: fetchedTeams, error: teamsError, count: teamsCount },
       fetchedProblemStatements,
     ] = await Promise.all([
@@ -91,46 +61,16 @@ export default async function AdminTeamsPage() {
         .range(from, to),
 
       getCachedProblemStatementOptions(),
-=======
-      { data: fetchedTeams, error: teamsError },
-      { data: fetchedProblemStatements, error: psError },
-    ] = await Promise.all([
-      supabase
-        .from('teams')
-        .select('*, students(*)')
-        .order('created_at', { ascending: false }),
-
-      supabase
-        .from('problem_statements')
-        .select(
-          'id, statement_code, title, description, theme, category, organization'
-        )
-        .order('statement_code', {
-          ascending: true,
-        }),
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
     ]);
 
     if (teamsError) {
       console.error('Failed to fetch teams:', teamsError);
     } else if (fetchedTeams) {
-<<<<<<< HEAD
       teams = fetchedTeams as unknown as TeamRow[];
       totalTeams = teamsCount || fetchedTeams.length || 0;
     }
 
     if (fetchedProblemStatements) {
-=======
-      teams = fetchedTeams;
-    }
-
-    if (psError) {
-      console.error(
-        'Failed to fetch problem statements:',
-        psError
-      );
-    } else if (fetchedProblemStatements) {
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
       problemStatements = fetchedProblemStatements;
     }
   } catch (err) {
@@ -295,15 +235,12 @@ export default async function AdminTeamsPage() {
                 })}
               </TableBody>
             </Table>
-<<<<<<< HEAD
             <Pagination
               currentPage={page}
               totalCount={totalTeams}
               pageSize={PAGE_SIZE}
               baseUrl="/admin/teams"
             />
-=======
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
           </TableContainer>
         )}
       </AdminTeamsClientWrapper>

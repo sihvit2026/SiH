@@ -24,11 +24,7 @@ export async function POST(req: Request) {
         team_code,
         status: status || 'registered',
       })
-<<<<<<< HEAD
       .select('id, team_name, team_code, status, created_at')
-=======
-      .select('*')
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
       .single();
 
     if (error) {

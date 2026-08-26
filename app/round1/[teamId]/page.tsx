@@ -8,16 +8,10 @@ import { requireAuth } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
-<<<<<<< HEAD
 import type { CriterionRow, StudentRow, ScoreRow, CommentRow, TeamRow } from '@/lib/schemas';
 
 export const dynamic = 'force-dynamic';
-=======
-import type { CriterionRow, StudentRow, ScoreRow, CommentRow } from '@/lib/schemas';
 
-export const dynamic = 'force-dynamic';
-
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 const evaluatorNavItems = [
   { label: 'Assigned Teams', href: '/round1', icon: '📝' },
   { label: 'Evaluation Guidelines', href: '#', icon: '📖' },
@@ -52,7 +46,6 @@ async function submitRound1Scores(formData: FormData) {
       .select('id, max_score')
       .eq('round', 1);
 
-<<<<<<< HEAD
     if (criteria && criteria.length > 0) {
       const scoreRows = criteria.map((crit) => ({
         evaluator_id: session.user.id,
@@ -63,20 +56,6 @@ async function submitRound1Scores(formData: FormData) {
       await supabase
         .from('round1_scores')
         .upsert(scoreRows, { onConflict: 'team_id, evaluator_id, criteria_id' });
-=======
-    if (criteria) {
-      for (const crit of criteria) {
-        const scoreVal = parseFloat(formData.get(`score_${crit.id}`) as string || '0');
-        await supabase
-          .from('round1_scores')
-          .upsert({
-            evaluator_id: session.user.id,
-            team_id: teamId,
-            criteria_id: crit.id,
-            score: scoreVal,
-          }, { onConflict: 'team_id, evaluator_id, criteria_id' });
-      }
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
     }
 
     if (commentText) {
@@ -112,26 +91,7 @@ export default async function Round1EvaluationFormPage({ params }: { params: Pro
   const resolvedParams = await params;
   const teamId = resolvedParams.teamId;
 
-<<<<<<< HEAD
   let teamDetails: TeamRow | null = null;
-=======
-  let teamDetails: {
-    id: string;
-    team_name: string;
-    team_code: string;
-    status: string;
-    students?: StudentRow[];
-    problem_statement?: {
-      id: string;
-      statement_code: string;
-      title: string;
-      description: string | null;
-      theme: string | null;
-      category: string | null;
-      organization: string | null;
-    } | null;
-  } | null = null;
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
   let criteriaList: CriterionRow[] = [];
   const existingScores: Record<string, number> = {};
   let existingComment = '';
@@ -157,17 +117,10 @@ export default async function Round1EvaluationFormPage({ params }: { params: Pro
     ] = await Promise.all([
       assignmentPromise,
       supabase.from('evaluation_locks').select('status').eq('evaluator_id', session.user.id).eq('team_id', teamId).eq('round', 1).single(),
-<<<<<<< HEAD
       supabase.from('teams').select('id, team_name, team_code, status, students(id, name, email, roll_number, is_leader, created_at), problem_statement:problem_statements(id, statement_code, title, description, theme, category, organization)').eq('id', teamId).single(),
       supabase.from('criteria').select('id, name, max_score, weight, round').eq('round', 1),
       supabase.from('round1_scores').select('criteria_id, score').eq('team_id', teamId).eq('evaluator_id', session.user.id),
       supabase.from('round1_comments').select('comment').eq('team_id', teamId).eq('evaluator_id', session.user.id).order('created_at', { ascending: false }).limit(1),
-=======
-      supabase.from('teams').select('*, students(*),problem_statement:problem_statements(*)').eq('id', teamId).single(),
-      supabase.from('criteria').select('*').eq('round', 1),
-      supabase.from('round1_scores').select('*').eq('team_id', teamId).eq('evaluator_id', session.user.id),
-      supabase.from('round1_comments').select('*').eq('team_id', teamId).eq('evaluator_id', session.user.id).order('created_at', { ascending: false }).limit(1),
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
     ]);
 
     // Authorization check: redirect if evaluator is not assigned to this team
@@ -179,11 +132,7 @@ export default async function Round1EvaluationFormPage({ params }: { params: Pro
       isLocked = true;
     }
 
-<<<<<<< HEAD
     teamDetails = team as unknown as TeamRow;
-=======
-    teamDetails = team;
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
     criteriaList = criteria || [];
 
     if (scores) {
@@ -206,17 +155,11 @@ export default async function Round1EvaluationFormPage({ params }: { params: Pro
 
   const totalMaxScore = criteriaList.reduce((acc, curr) => acc + Number(curr.max_score), 0);
 
-<<<<<<< HEAD
   const typedTeam = teamDetails as unknown as TeamRow;
 
   return (
     <Shell
       title={`Evaluate: ${typedTeam.team_name}`}
-=======
-  return (
-    <Shell
-      title={`Evaluate: ${teamDetails.team_name}`}
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
       roleName="Round 1 Evaluator"
       roleType="evaluator"
       userName={session.name}
@@ -419,8 +362,4 @@ export default async function Round1EvaluationFormPage({ params }: { params: Pro
       </div>
     </Shell>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59

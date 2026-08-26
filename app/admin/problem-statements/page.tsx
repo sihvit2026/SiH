@@ -14,7 +14,6 @@ import { requireAuth } from '@/lib/auth';
 import { ProblemStatementsClientWrapper } from '@/components/admin/ProblemStatementsClientWrapper';
 import { ProblemStatementRowActions } from '@/components/admin/ProblemStatementRowActions';
 import type { ProblemStatementRow } from '@/lib/schemas';
-<<<<<<< HEAD
 import { getCachedActiveEvent } from '@/lib/cached-queries';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -56,54 +55,6 @@ export default async function AdminProblemStatementsPage({ searchParams }: { sea
   } else if (psRes.data) {
     problemStatements = psRes.data;
     totalStatements = psRes.count || psRes.data.length || 0;
-=======
-import { Badge } from '@/components/ui/Badge';
-import { EmptyState } from '@/components/ui/EmptyState';
-
-export const dynamic = 'force-dynamic';
-
-const adminNavItems = [
-  { label: 'Dashboard', href: '/admin', icon: '📊' },
-  { label: 'Teams & Members', href: '/admin/teams', icon: '👥' },
-  { label: 'Problem Statements', href: '/admin/problem-statements', icon: '📋' },
-  { label: 'Evaluators & Jury', href: '/admin/evaluators', icon: '🎓' },
-  { label: 'Criteria Builder', href: '/admin/criteria', icon: '🎯' },
-  { label: 'Round 1 / Round 2 Mapping', href: '/admin/assignments', icon: '📌' },
-  { label: 'Audit Trail', href: '/admin/audit', icon: '🛡️' },
-  { label: 'Merit & Reports', href: '/reports', icon: '🏆' },
-];
-
-export default async function AdminProblemStatementsPage() {
-  const session = await requireAuth(['admin', 'data_operator']);
-  const supabase = createAdminClient();
-
-  // Find the current event
-  const { data: eventData, error: eventError } = await supabase
-    .from('events')
-    .select('id, name, status')
-    .in('status', ['upcoming', 'ongoing'])
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  let problemStatements: ProblemStatementRow[] = [];
-
-  // Only query problem statements when a real event exists.
-  if (eventData?.id) {
-    const { data, error } = await supabase
-      .from('problem_statements')
-      .select('*')
-      .eq('event_id', eventData.id)
-      .order('statement_code', { ascending: true });
-
-    if (error) {
-      console.error('Failed to fetch problem statements:', error);
-    } else {
-      problemStatements = data ?? [];
-    }
-  } else if (eventError) {
-    console.error('Failed to fetch active event:', eventError);
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
   }
 
   return (
@@ -195,15 +146,12 @@ export default async function AdminProblemStatementsPage() {
                   ))}
                 </TableBody>
               </Table>
-<<<<<<< HEAD
               <Pagination
                 currentPage={page}
                 totalCount={totalStatements}
                 pageSize={PAGE_SIZE}
                 baseUrl="/admin/problem-statements"
               />
-=======
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
             </TableContainer>
           )}
         </ProblemStatementsClientWrapper>

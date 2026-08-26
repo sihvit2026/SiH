@@ -5,20 +5,14 @@ import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { Select } from '@/components/ui/Select';
 import { useRouter } from 'next/navigation';
-<<<<<<< HEAD
 import Link from 'next/link';
-=======
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 import {
     assignEvaluatorToTeam,
     unassignEvaluatorFromTeam,
     assignJuryToTeam,
     unassignJuryFromTeam,
 } from '@/lib/actions/assignments';
-<<<<<<< HEAD
 import { Pagination } from '@/components/ui/Pagination';
-=======
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 
 interface TeamOption {
     id: string;
@@ -55,7 +49,6 @@ interface Props {
     evaluators: PersonOption[];
     round1Assignments: AssignmentItem[];
     round2Assignments: AssignmentItem[];
-<<<<<<< HEAD
     activeTab: 'round1' | 'round2';
     pagination: {
         currentPage: number;
@@ -64,18 +57,13 @@ interface Props {
         baseUrl: string;
         tab: 'round1' | 'round2';
     };
-=======
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 }
-
-type MappingTab = 'round1' | 'round2';
 
 export const AssignmentsClientWrapper: React.FC<Props> = ({
     teams,
     evaluators,
     round1Assignments,
     round2Assignments,
-<<<<<<< HEAD
     activeTab,
     pagination,
 }) => {
@@ -85,20 +73,6 @@ export const AssignmentsClientWrapper: React.FC<Props> = ({
     const [selectedTeam, setSelectedTeam] = useState('');
     const [selectedPerson, setSelectedPerson] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-=======
-}) => {
-    const router = useRouter();
-
-    const [activeTab, setActiveTab] =
-        useState<MappingTab>('round1');
-
-    const [isOpen, setIsOpen] = useState(false);
-    const [selectedTeam, setSelectedTeam] = useState('');
-    const [selectedPerson, setSelectedPerson] =
-        useState('');
-    const [isSubmitting, setIsSubmitting] =
-        useState(false);
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 
     const round1Evaluators = useMemo(
         () =>
@@ -279,47 +253,25 @@ export const AssignmentsClientWrapper: React.FC<Props> = ({
             {/* Tabs */}
             <div className="border-b border-slate-200">
                 <div className="flex gap-6">
-<<<<<<< HEAD
                     <Link
                         href={`/admin/assignments?tab=round1`}
-=======
-                    <button
-                        type="button"
-                        onClick={() =>
-                            setActiveTab('round1')
-                        }
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
                         className={`border-b-2 px-1 pb-3 text-sm font-semibold transition-colors ${activeTab === 'round1'
                                 ? 'border-blue-600 text-blue-700'
                                 : 'border-transparent text-slate-500 hover:text-slate-800'
                             }`}
                     >
                         Round 1 Mapping
-<<<<<<< HEAD
                     </Link>
 
                     <Link
                         href={`/admin/assignments?tab=round2`}
-=======
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={() =>
-                            setActiveTab('round2')
-                        }
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
                         className={`border-b-2 px-1 pb-3 text-sm font-semibold transition-colors ${activeTab === 'round2'
                                 ? 'border-purple-600 text-purple-700'
                                 : 'border-transparent text-slate-500 hover:text-slate-800'
                             }`}
                     >
                         Round 2 Mapping
-<<<<<<< HEAD
                     </Link>
-=======
-                    </button>
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
                 </div>
             </div>
 
@@ -332,11 +284,7 @@ export const AssignmentsClientWrapper: React.FC<Props> = ({
 
                     <p className="mt-1 text-xs text-blue-700">
                         Assign Round 1 evaluators to participating teams.
-<<<<<<< HEAD
                         Assigned teams will appear in the evaluator&apos;s
-=======
-                        Assigned teams will appear in the evaluator's
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
                         Round 1 workspace.
                     </p>
                 </div>
@@ -349,11 +297,7 @@ export const AssignmentsClientWrapper: React.FC<Props> = ({
                     <p className="mt-1 text-xs text-purple-700">
                         Only shortlisted teams can be assigned to Round 2
                         jury members. Assigned teams will appear in the
-<<<<<<< HEAD
                         jury&apos;s Round 2 workspace.
-=======
-                        jury's Round 2 workspace.
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
                     </p>
                 </div>
             )}
@@ -437,7 +381,6 @@ export const AssignmentsClientWrapper: React.FC<Props> = ({
                                                                 : 'bg-purple-600'
                                                             }`}
                                                     />
-
                                                     <span className="font-medium text-slate-700">
                                                         {assignment.evaluators
                                                             ?.name || '—'}
@@ -470,7 +413,6 @@ export const AssignmentsClientWrapper: React.FC<Props> = ({
                             </tbody>
                         </table>
                     </div>
-<<<<<<< HEAD
                     <Pagination
                         currentPage={pagination.currentPage}
                         totalCount={pagination.totalCount}
@@ -478,8 +420,6 @@ export const AssignmentsClientWrapper: React.FC<Props> = ({
                         baseUrl={pagination.baseUrl}
                         tab={pagination.tab}
                     />
-=======
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
                 </div>
             )}
 

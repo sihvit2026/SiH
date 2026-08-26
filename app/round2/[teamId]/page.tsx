@@ -71,7 +71,6 @@ async function submitRound2JuryScores(formData: FormData) {
      * 1. Verify Round 2 assignment
      * ------------------------------------------------------------------
      */
-<<<<<<< HEAD
     const assignmentPromise = session.role !== 'admin'
       ? supabase.from('round2_assignments').select('id').eq('jury_id', session.user.id).eq('team_id', teamId).maybeSingle()
       : Promise.resolve({ data: { id: 'admin-bypass' }, error: null });
@@ -119,138 +118,6 @@ async function submitRound2JuryScores(formData: FormData) {
     if (criteriaError) throw criteriaError;
     if (!criteria || criteria.length === 0) {
       throw new Error('No Round 2 criteria are configured.');
-=======
-    if (session.role !== 'admin') {
-      const { data: assignment, error: assignmentError } =
-        await supabase
-          .from('round2_assignments')
-          .select('id')
-          .eq('jury_id', session.user.id)
-          .eq('team_id', teamId)
-          .maybeSingle();
-
-      if (assignmentError) {
-        throw assignmentError;
-      }
-
-      if (!assignment) {
-        throw new Error(
-          'You are not assigned to this team for Round 2 evaluation.'
-        );
-      }
-    }
-
-    /*
-     * ------------------------------------------------------------------
-     * 2. Verify jury attendance
-     * ------------------------------------------------------------------
-     */
-    if (session.role !== 'admin') {
-      const { data: evaluator, error: evaluatorError } =
-        await supabase
-          .from('evaluators')
-          .select('round2_attendance, role')
-          .eq('id', session.user.id)
-          .single();
-
-      if (evaluatorError) {
-        throw evaluatorError;
-      }
-
-      if (evaluator.role !== 'jury') {
-        throw new Error(
-          'Only Round 2 jury members can submit Round 2 scores.'
-        );
-      }
-
-      if (
-        evaluator.round2_attendance !== 'present'
-      ) {
-        throw new Error(
-          'Jury attendance is absent. Round 2 submission is locked.'
-        );
-      }
-    }
-
-    /*
-     * ------------------------------------------------------------------
-     * 3. Verify the team is still shortlisted
-     * ------------------------------------------------------------------
-     */
-    const { data: team, error: teamError } =
-      await supabase
-        .from('teams')
-        .select('id, status')
-        .eq('id', teamId)
-        .single();
-
-    if (teamError) {
-      throw teamError;
-    }
-
-    if (!team) {
-      throw new Error('Team not found.');
-    }
-
-    if (
-      team.status !== 'shortlisted' &&
-      session.role !== 'admin'
-    ) {
-      throw new Error(
-        'This team is no longer shortlisted for Round 2.'
-      );
-    }
-
-    /*
-     * ------------------------------------------------------------------
-     * 4. Check scorecard lock
-     * ------------------------------------------------------------------
-     */
-    const { data: lock, error: lockError } =
-      await supabase
-        .from('evaluation_locks')
-        .select('status')
-        .eq('evaluator_id', session.user.id)
-        .eq('team_id', teamId)
-        .eq('round', 2)
-        .maybeSingle();
-
-    if (lockError) {
-      throw lockError;
-    }
-
-    if (
-      lock?.status === 'locked' &&
-      session.role !== 'admin'
-    ) {
-      throw new Error(
-        'Jury scorecard is locked and cannot be edited.'
-      );
-    }
-
-    /*
-     * ------------------------------------------------------------------
-     * 5. Fetch Round 2 criteria
-     * ------------------------------------------------------------------
-     */
-    const { data: criteria, error: criteriaError } =
-      await supabase
-        .from('criteria')
-        .select('id, name, max_score')
-        .eq('round', 2)
-        .order('name', {
-          ascending: true,
-        });
-
-    if (criteriaError) {
-      throw criteriaError;
-    }
-
-    if (!criteria || criteria.length === 0) {
-      throw new Error(
-        'No Round 2 criteria are configured.'
-      );
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
     }
 
     /*
@@ -258,7 +125,6 @@ async function submitRound2JuryScores(formData: FormData) {
      * 6. Validate and save every score
      * ------------------------------------------------------------------
      */
-<<<<<<< HEAD
     const scoreRows = [];
     for (const criterion of criteria) {
       const rawValue = formData.get(`score_${criterion.id}`);
@@ -282,45 +148,6 @@ async function submitRound2JuryScores(formData: FormData) {
         .upsert(scoreRows, { onConflict: 'team_id, jury_id, criteria_id' });
 
       if (scoreError) throw scoreError;
-=======
-    for (const criterion of criteria) {
-      const rawValue = formData.get(
-        `score_${criterion.id}`
-      );
-
-      const scoreVal = Number(rawValue);
-
-      if (
-        !Number.isFinite(scoreVal) ||
-        scoreVal < 0 ||
-        scoreVal > Number(criterion.max_score)
-      ) {
-        throw new Error(
-          `Invalid score for "${criterion.name}". ` +
-          `Score must be between 0 and ${criterion.max_score}.`
-        );
-      }
-
-      const { error: scoreError } =
-        await supabase
-          .from('round2_scores')
-          .upsert(
-            {
-              jury_id: session.user.id,
-              team_id: teamId,
-              criteria_id: criterion.id,
-              score: scoreVal,
-            },
-            {
-              onConflict:
-                'team_id, jury_id, criteria_id',
-            }
-          );
-
-      if (scoreError) {
-        throw scoreError;
-      }
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
     }
 
     /*
@@ -464,25 +291,13 @@ export default async function Round2JuryEvaluationFormPage({
 
       supabase
         .from('teams')
-<<<<<<< HEAD
         .select(`id, team_name, team_code, status, students(id, name, email, roll_number, is_leader, created_at), problem_statement:problem_statements(id, statement_code, title, description, theme, category, organization)`)
-=======
-        .select(`
-          *,
-          students(*),
-          problem_statement:problem_statements(*)
-        `)
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
         .eq('id', teamId)
         .single(),
 
       supabase
         .from('criteria')
-<<<<<<< HEAD
         .select('id, name, max_score, weight, round')
-=======
-        .select('*')
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
         .eq('round', 2)
         .order('name', {
           ascending: true,
@@ -490,21 +305,13 @@ export default async function Round2JuryEvaluationFormPage({
 
       supabase
         .from('round2_scores')
-<<<<<<< HEAD
         .select('criteria_id, score')
-=======
-        .select('*')
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
         .eq('team_id', teamId)
         .eq('jury_id', session.user.id),
 
       supabase
         .from('round2_comments')
-<<<<<<< HEAD
         .select('comment')
-=======
-        .select('*')
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
         .eq('team_id', teamId)
         .eq('jury_id', session.user.id)
         .order('created_at', {

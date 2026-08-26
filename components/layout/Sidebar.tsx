@@ -10,10 +10,7 @@ export interface NavItem {
   href: string;
   icon: React.ReactNode;
   badge?: string | number;
-<<<<<<< HEAD
   prefetch?: boolean;
-=======
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 }
 
 interface SidebarProps {
@@ -46,17 +43,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <Image
             src="/VIT-logo.png"
             alt="Vishwakarma Institute of Technology, Pune"
-<<<<<<< HEAD
             width={200}
             height={40}
             priority
             style={{ width: 'auto', height: 'auto' }}
             className="w-auto h-10 object-contain"
-=======
-            width={2000}
-            height={100}
-            className="w-auto object-contain"
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
           />
         </div>
 
@@ -87,10 +78,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Link
                 key={item.href}
                 href={item.href}
-<<<<<<< HEAD
                 prefetch={item.prefetch ?? false}
-=======
->>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
                 onClick={onCloseMobile}
                 className={`
                   relative flex items-center justify-between
