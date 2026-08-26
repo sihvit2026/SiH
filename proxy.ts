@@ -7,6 +7,7 @@ import { NextResponse, type NextRequest } from 'next/server';
  *
  * IMPORTANT: This does NOT replace server-side requireAuth() calls.
  * It only ensures Supabase sessions are refreshed so cookies stay valid.
+<<<<<<< HEAD
  * Authentication validation is done in server components via getCurrentUser().
  */
 export async function proxy(request: NextRequest) {
@@ -36,6 +37,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+=======
+ */
+export async function proxy(request: NextRequest) {
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -59,8 +64,30 @@ export async function proxy(request: NextRequest) {
     }
   );
 
+<<<<<<< HEAD
   // Refresh session to keep cookies valid - server components will call getUser() for auth validation
   await supabase.auth.refreshSession();
+=======
+  // IMPORTANT: Do NOT add any logic between createServerClient and getUser().
+  // A simple mistake could make it hard to debug issues with users being
+  // randomly logged out.
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const url = request.nextUrl;
+  const isProtectedPath =
+    url.pathname.startsWith('/admin') ||
+    url.pathname.startsWith('/round1') ||
+    url.pathname.startsWith('/round2') ||
+    url.pathname.startsWith('/reports') ||
+    url.pathname.startsWith('/api/admin');
+
+  if (!user && isProtectedPath) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = '/login';
+    loginUrl.searchParams.set('redirect', url.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 
   return supabaseResponse;
 }

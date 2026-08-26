@@ -9,7 +9,20 @@ import { ShortlistControlCard } from '@/components/admin/ShortlistControlCard';
 
 export const dynamic = 'force-dynamic';
 
+<<<<<<< HEAD
 import { adminNavItems } from '@/lib/nav';
+=======
+const adminNavItems = [
+  { label: 'Dashboard', href: '/admin', icon: '📊' },
+  { label: 'Teams & Members', href: '/admin/teams', icon: '👥' },
+  { label: 'Problem Statements', href: '/admin/problem-statements', icon: '📋' },
+  { label: 'Evaluators & Jury', href: '/admin/evaluators', icon: '🎓' },
+  { label: 'Criteria Builder', href: '/admin/criteria', icon: '🎯' },
+  { label: 'Round 1 / Round 2 Mapping', href: '/admin/assignments', icon: '📌' },
+  { label: 'Audit Trail', href: '/admin/audit', icon: '🛡️' },
+  { label: 'Merit & Reports', href: '/reports', icon: '🏆' },
+];
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 
 export default async function AdminDashboardPage() {
   const session = await requireAuth(['admin', 'data_operator']);
@@ -31,6 +44,7 @@ export default async function AdminDashboardPage() {
   try {
     const supabase = createAdminClient();
 
+<<<<<<< HEAD
     // Use count queries instead of fetching all rows
     const [
       { count: totalTeams },
@@ -59,6 +73,36 @@ export default async function AdminDashboardPage() {
     stats.evaluatorsCount = evaluatorsCount || 0;
     stats.juryCount = juryCount || 0;
     stats.juryPresentCount = juryPresentCount || 0;
+=======
+    // Fetch counts from database
+    const [{ count: teamCount }, { data: teams }, { data: evaluators }, { data: auditLogs }] = await Promise.all([
+      supabase.from('teams').select('id', { count: 'exact', head: true }),
+      supabase.from('teams').select('status'),
+      supabase.from('evaluators').select('role, round2_attendance'),
+      supabase.from('audit_log').select('id, operation, table_name, created_at').order('created_at', { ascending: false }).limit(5),
+    ]);
+
+    stats.totalTeams = teamCount || 0;
+
+    if (teams) {
+      teams.forEach((t: { status: string }) => {
+        teamStatusBreakdown[t.status] = (teamStatusBreakdown[t.status] || 0) + 1;
+      });
+      stats.r1Pending = teamStatusBreakdown['round1_pending'] || 0;
+      stats.shortlisted = teamStatusBreakdown['shortlisted'] || 0;
+      stats.selected = teamStatusBreakdown['selected'] || 0;
+    }
+
+    if (evaluators) {
+      evaluators.forEach((e: { role: string; round2_attendance: string }) => {
+        if (e.role === 'evaluator') stats.evaluatorsCount++;
+        if (e.role === 'jury') {
+          stats.juryCount++;
+          if (e.round2_attendance === 'present') stats.juryPresentCount++;
+        }
+      });
+    }
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 
     if (auditLogs) {
       recentAuditLogs.push(...auditLogs);

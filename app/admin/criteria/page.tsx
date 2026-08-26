@@ -23,11 +23,27 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { CriteriaClientWrapper } from '@/components/admin/CriteriaClientWrapper';
 import { CriterionRowActions } from '@/components/admin/CriterionRowActions';
 import type { CriterionRow } from '@/lib/schemas';
+<<<<<<< HEAD
 import { getCachedCriteria } from '@/lib/cached-queries';
 
 export const dynamic = 'force-dynamic';
 
 import { adminNavItems } from '@/lib/nav';
+=======
+
+export const dynamic = 'force-dynamic';
+
+const adminNavItems = [
+  { label: 'Dashboard', href: '/admin', icon: '📊' },
+  { label: 'Teams & Members', href: '/admin/teams', icon: '👥' },
+  { label: 'Problem Statements', href: '/admin/problem-statements', icon: '📋' },
+  { label: 'Evaluators & Jury', href: '/admin/evaluators', icon: '🎓' },
+  { label: 'Criteria Builder', href: '/admin/criteria', icon: '🎯' },
+  { label: 'Round 1 Mapping', href: '/admin/assignments', icon: '📌' },
+  { label: 'Audit Trail', href: '/admin/audit', icon: '🛡️' },
+  { label: 'Merit & Reports', href: '/reports', icon: '🏆' },
+];
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 
 export default async function AdminCriteriaPage() {
   const session = await requireAuth([
@@ -35,7 +51,39 @@ export default async function AdminCriteriaPage() {
     'data_operator',
   ]);
 
+<<<<<<< HEAD
   const criteriaList: CriterionRow[] = await getCachedCriteria();
+=======
+  let criteriaList: CriterionRow[] = [];
+
+  try {
+    const supabase = createAdminClient();
+
+    const { data, error } = await supabase
+      .from('criteria')
+      .select('*')
+      .order('round', {
+        ascending: true,
+      })
+      .order('name', {
+        ascending: true,
+      });
+
+    if (error) {
+      console.error(
+        'Failed to fetch criteria:',
+        error
+      );
+    } else if (data) {
+      criteriaList = data;
+    }
+  } catch (err) {
+    console.error(
+      'Failed to fetch criteria:',
+      err
+    );
+  }
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 
   const r1Criteria = criteriaList.filter(
     (criterion) => criterion.round === 1

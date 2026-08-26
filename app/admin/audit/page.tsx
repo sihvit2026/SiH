@@ -8,18 +8,38 @@ import type { AuditLogRow } from '@/lib/schemas';
 
 export const dynamic = 'force-dynamic';
 
+<<<<<<< HEAD
 import { adminNavItems } from '@/lib/nav';
 
 export default async function AdminAuditPage() {
   const session = await requireAuth(['admin', 'data_operator']);
   
+=======
+const adminNavItems = [
+  { label: 'Dashboard', href: '/admin', icon: '📊' },
+  { label: 'Teams & Members', href: '/admin/teams', icon: '👥' },
+  { label: 'Problem Statements', href: '/admin/problem-statements', icon: '📋' },
+  { label: 'Evaluators & Jury', href: '/admin/evaluators', icon: '🎓' },
+  { label: 'Criteria Builder', href: '/admin/criteria', icon: '🎯' },
+  { label: 'Round 1 / Round 2 Mapping', href: '/admin/assignments', icon: '📌' },
+  { label: 'Audit Trail', href: '/admin/audit', icon: '🛡️' },
+  { label: 'Merit & Reports', href: '/reports', icon: '🏆' },
+];
+
+export default async function AdminAuditPage() {
+  const session = await requireAuth(['admin', 'data_operator']);
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
   let logs: AuditLogRow[] = [];
 
   try {
     const supabase = createAdminClient();
     const { data: fetchedLogs } = await supabase
       .from('audit_log')
+<<<<<<< HEAD
       .select('id, operation, table_name, performed_by, row_id, old_value, new_value, created_at')
+=======
+      .select('*')
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
       .order('created_at', { ascending: false })
       .limit(50);
 

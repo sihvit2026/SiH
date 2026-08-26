@@ -11,10 +11,25 @@ import type { Round1AverageRow, Round2AverageRow } from '@/lib/schemas';
 
 export const dynamic = 'force-dynamic';
 
+<<<<<<< HEAD
 import { adminNavItems as reportsNavItems } from '@/lib/nav';
 export default async function ReportsPage() {
   const session = await requireAuth();
   
+=======
+const reportsNavItems = [
+  { label: 'Dashboard', href: '/admin', icon: '📊' },
+  { label: 'Teams & Members', href: '/admin/teams', icon: '👥' },
+  { label: 'Problem Statements', href: '/admin/problem-statements', icon: '📋' },
+  { label: 'Evaluators & Jury', href: '/admin/evaluators', icon: '🎓' },
+  { label: 'Criteria Builder', href: '/admin/criteria', icon: '🎯' },
+  { label: 'Round 1 / Round 2 Mapping', href: '/admin/assignments', icon: '📌' },
+  { label: 'Audit Trail', href: '/admin/audit', icon: '🛡️' },
+  { label: 'Merit & Reports', href: '/reports', icon: '🏆' },
+];
+export default async function ReportsPage() {
+  const session = await requireAuth();
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
   let round1Averages: Round1AverageRow[] = [];
   let round2Averages: Round2AverageRow[] = [];
 
@@ -23,8 +38,13 @@ export default async function ReportsPage() {
 
     // Query database views
     const [{ data: r1Data }, { data: r2Data }] = await Promise.all([
+<<<<<<< HEAD
       supabase.from('team_round1_average').select('team_id, team_name, event_id, avg_score, evaluator_count, score_count').order('avg_score', { ascending: false }),
       supabase.from('team_round2_average').select('team_id, team_name, event_id, avg_score, jury_count, score_count').order('avg_score', { ascending: false }),
+=======
+      supabase.from('team_round1_average').select('*').order('avg_score', { ascending: false }),
+      supabase.from('team_round2_average').select('*').order('avg_score', { ascending: false }),
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
     ]);
 
     if (r1Data) round1Averages = r1Data;

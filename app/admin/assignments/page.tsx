@@ -3,6 +3,7 @@ import { Shell } from '@/components/layout/Shell';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireAuth } from '@/lib/auth';
 import { AssignmentsClientWrapper } from '@/components/admin/AssignmentsClientWrapper';
+<<<<<<< HEAD
 import { Pagination } from '@/components/ui/Pagination';
 
 export const dynamic = 'force-dynamic';
@@ -10,11 +11,33 @@ export const dynamic = 'force-dynamic';
 import { adminNavItems } from '@/lib/nav';
 
 export default async function AdminAssignmentsPage({ searchParams }: { searchParams: Promise<{ page?: string; tab?: string }> }) {
+=======
+
+export const dynamic = 'force-dynamic';
+
+const adminNavItems = [
+  { label: 'Dashboard', href: '/admin', icon: '📊' },
+  { label: 'Teams & Members', href: '/admin/teams', icon: '👥' },
+  { label: 'Problem Statements', href: '/admin/problem-statements', icon: '📋' },
+  { label: 'Evaluators & Jury', href: '/admin/evaluators', icon: '🎓' },
+  { label: 'Criteria Builder', href: '/admin/criteria', icon: '🎯' },
+  {
+    label: 'Round 1 / Round 2 Mapping',
+    href: '/admin/assignments',
+    icon: '📌',
+  },
+  { label: 'Audit Trail', href: '/admin/audit', icon: '🛡️' },
+  { label: 'Merit & Reports', href: '/reports', icon: '🏆' },
+];
+
+export default async function AdminAssignmentsPage() {
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
   const session = await requireAuth([
     'admin',
     'data_operator',
   ]);
 
+<<<<<<< HEAD
   const resolvedParams = await searchParams;
   const pageStr = resolvedParams?.page || '1';
   const page = parseInt(pageStr, 10) || 1;
@@ -24,6 +47,8 @@ export default async function AdminAssignmentsPage({ searchParams }: { searchPar
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
+=======
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
   const supabase = createAdminClient();
 
   let teams: {
@@ -71,13 +96,27 @@ export default async function AdminAssignmentsPage({ searchParams }: { searchPar
     } | null;
   }[] = [];
 
+<<<<<<< HEAD
   let totalRound1 = 0;
   let totalRound2 = 0;
 
+=======
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
   try {
     const [
       { data: fetchedTeams, error: teamError },
       { data: fetchedEvaluators, error: evaluatorError },
+<<<<<<< HEAD
+=======
+      {
+        data: fetchedRound1,
+        error: round1Error,
+      },
+      {
+        data: fetchedRound2,
+        error: round2Error,
+      },
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
     ] = await Promise.all([
       supabase
         .from('teams')
@@ -94,6 +133,27 @@ export default async function AdminAssignmentsPage({ searchParams }: { searchPar
         .order('name', {
           ascending: true,
         }),
+<<<<<<< HEAD
+=======
+
+      supabase
+        .from('round1_assignments')
+        .select(
+          'id, team_id, evaluator_id, assigned_at, teams(team_code, team_name, status), evaluators(name, role)'
+        )
+        .order('assigned_at', {
+          ascending: false,
+        }),
+
+      supabase
+        .from('round2_assignments')
+        .select(
+          'id, team_id, jury_id, assigned_at, teams(team_code, team_name, status), evaluators(name, role)'
+        )
+        .order('assigned_at', {
+          ascending: false,
+        }),
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
     ]);
 
     if (teamError) {
@@ -118,6 +178,7 @@ export default async function AdminAssignmentsPage({ searchParams }: { searchPar
       }[];
     }
 
+<<<<<<< HEAD
     // Fetch assignments with pagination based on active tab
     if (tab === 'round1') {
       const { data: fetchedRound1, error: round1Error, count } = await supabase
@@ -161,6 +222,24 @@ export default async function AdminAssignmentsPage({ searchParams }: { searchPar
         round2Assignments = fetchedRound2 as typeof round2Assignments;
         totalRound2 = count || fetchedRound2.length || 0;
       }
+=======
+    if (round1Error) {
+      console.error(
+        'Failed to fetch Round 1 assignments:',
+        round1Error
+      );
+    } else if (fetchedRound1) {
+      round1Assignments = fetchedRound1 as typeof round1Assignments;
+    }
+
+    if (round2Error) {
+      console.error(
+        'Failed to fetch Round 2 assignments:',
+        round2Error
+      );
+    } else if (fetchedRound2) {
+      round2Assignments = fetchedRound2 as typeof round2Assignments;
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
     }
   } catch (error) {
     console.error(
@@ -186,6 +265,7 @@ export default async function AdminAssignmentsPage({ searchParams }: { searchPar
         evaluators={evaluators}
         round1Assignments={round1Assignments}
         round2Assignments={round2Assignments}
+<<<<<<< HEAD
         activeTab={tab}
         pagination={{
           currentPage: page,
@@ -194,6 +274,8 @@ export default async function AdminAssignmentsPage({ searchParams }: { searchPar
           baseUrl: '/admin/assignments',
           tab,
         }}
+=======
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
       />
     </Shell>
   );

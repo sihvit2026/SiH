@@ -18,11 +18,27 @@ import { AdminEvaluatorsClientWrapper } from '@/components/admin/AdminEvaluators
 import { EmptyState } from '@/components/ui/EmptyState';
 import type { EvaluatorRow } from '@/lib/schemas';
 import { EvaluatorRowActions } from '@/components/admin/EvaluatorRowActions';
+<<<<<<< HEAD
 import { Pagination } from '@/components/ui/Pagination';
 
 export const dynamic = 'force-dynamic';
 
 import { adminNavItems } from '@/lib/nav';
+=======
+
+export const dynamic = 'force-dynamic';
+
+const adminNavItems = [
+  { label: 'Dashboard', href: '/admin', icon: '📊' },
+  { label: 'Teams & Members', href: '/admin/teams', icon: '👥' },
+  { label: 'Problem Statements', href: '/admin/problem-statements', icon: '📋' },
+  { label: 'Evaluators & Jury', href: '/admin/evaluators', icon: '🎓' },
+  { label: 'Criteria Builder', href: '/admin/criteria', icon: '🎯' },
+  { label: 'Round 1 / Round 2 Mapping', href: '/admin/assignments', icon: '📌' },
+  { label: 'Audit Trail', href: '/admin/audit', icon: '🛡️' },
+  { label: 'Merit & Reports', href: '/reports', icon: '🏆' },
+];
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 
 async function toggleJuryAttendance(formData: FormData) {
   'use server';
@@ -62,11 +78,16 @@ async function toggleJuryAttendance(formData: FormData) {
   }
 }
 
+<<<<<<< HEAD
 export default async function AdminEvaluatorsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+=======
+export default async function AdminEvaluatorsPage() {
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
   const session = await requireAuth([
     'admin',
     'data_operator',
   ]);
+<<<<<<< HEAD
   
   const resolvedParams = await searchParams;
   const pageStr = resolvedParams?.page || '1';
@@ -77,10 +98,15 @@ export default async function AdminEvaluatorsPage({ searchParams }: { searchPara
 
   let evaluators: EvaluatorRow[] = [];
   let totalEvaluators = 0;
+=======
+
+  let evaluators: EvaluatorRow[] = [];
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 
   try {
     const supabase = createAdminClient();
 
+<<<<<<< HEAD
     const { data: fetchedEvaluators, error, count } =
       await supabase
         .from('evaluators')
@@ -89,6 +115,15 @@ export default async function AdminEvaluatorsPage({ searchParams }: { searchPara
           ascending: false,
         })
         .range(from, to);
+=======
+    const { data: fetchedEvaluators, error } =
+      await supabase
+        .from('evaluators')
+        .select('*')
+        .order('created_at', {
+          ascending: false,
+        });
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 
     if (error) {
       console.error(
@@ -98,7 +133,10 @@ export default async function AdminEvaluatorsPage({ searchParams }: { searchPara
     } else if (fetchedEvaluators) {
       evaluators =
         fetchedEvaluators as EvaluatorRow[];
+<<<<<<< HEAD
       totalEvaluators = count || fetchedEvaluators.length || 0;
+=======
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
     }
   } catch (err) {
     console.error(
@@ -250,12 +288,15 @@ export default async function AdminEvaluatorsPage({ searchParams }: { searchPara
                 ))}
               </TableBody>
             </Table>
+<<<<<<< HEAD
             <Pagination
               currentPage={page}
               totalCount={totalEvaluators}
               pageSize={PAGE_SIZE}
               baseUrl="/admin/evaluators"
             />
+=======
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
           </TableContainer>
         )}
       </AdminEvaluatorsClientWrapper>

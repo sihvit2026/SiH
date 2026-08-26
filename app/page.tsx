@@ -94,7 +94,10 @@ export default function HomePage() {
                 alt="VIT Pune"
                 width={230}
                 height={150}
+<<<<<<< HEAD
                 style={{ width: 'auto', height: 'auto' }}
+=======
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
                 className="h-[78px] w-auto object-contain"
               />
               <span className="text-xl font-medium text-slate-400">
@@ -105,7 +108,10 @@ export default function HomePage() {
                 alt="Smart India Hackathon"
                 width={100}
                 height={80}
+<<<<<<< HEAD
                 style={{ width: 'auto', height: 'auto' }}
+=======
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
                 className="h-[80px] w-auto object-contain"
               />
             </div>

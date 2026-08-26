@@ -41,9 +41,15 @@ export default async function Round2DashboardPage() {
         team_id,
         jury_id,
         teams(
+<<<<<<< HEAD
           id, team_code, status, team_name,
           students(id, name, is_leader, roll_number),
           problem_statement:problem_statements(id, statement_code, title, description, theme, category, organization)
+=======
+          *,
+          students(*),
+          problem_statement:problem_statements(*)
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
         )
       `)
       .eq('jury_id', session.user.id);

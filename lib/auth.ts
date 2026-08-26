@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import { cache } from 'react';
+=======
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
@@ -16,11 +19,18 @@ export interface CurrentUserSession {
  * Resolves the authenticated user's identity and role server-side.
  * Priority: profiles table (admin/data_operator/viewer) → evaluators table (evaluator/jury)
  * Returns null if not authenticated or no role can be determined.
+<<<<<<< HEAD
  * Memoized per request using React cache.
  *
  * SECURITY: Never falls back to a privileged role. Returns null on any ambiguity.
  */
 export const getCurrentUser = cache(async (): Promise<CurrentUserSession | null> => {
+=======
+ *
+ * SECURITY: Never falls back to a privileged role. Returns null on any ambiguity.
+ */
+export async function getCurrentUser(): Promise<CurrentUserSession | null> {
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
   try {
     const supabase = await createClient();
     const { data: { user }, error } = await supabase.auth.getUser();
@@ -35,12 +45,20 @@ export const getCurrentUser = cache(async (): Promise<CurrentUserSession | null>
         .from('profiles')
         .select('name, role')
         .eq('id', user.id)
+<<<<<<< HEAD
         .maybeSingle(),
+=======
+        .single(),
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
       supabase
         .from('evaluators')
         .select('name, role, round2_attendance')
         .eq('id', user.id)
+<<<<<<< HEAD
         .maybeSingle(),
+=======
+        .single(),
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
     ]);
 
     // profiles table takes priority (admin/data_operator/viewer)
@@ -77,7 +95,11 @@ export const getCurrentUser = cache(async (): Promise<CurrentUserSession | null>
     console.error('Error in getCurrentUser:', err);
     return null;
   }
+<<<<<<< HEAD
 });
+=======
+}
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
 
 /**
  * Server-side auth guard. Redirects to /login if unauthenticated.

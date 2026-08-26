@@ -32,6 +32,7 @@ export default async function Round1DashboardPage() {
     const { data: assignments, error } = await supabase
       .from('round1_assignments')
       .select(`
+<<<<<<< HEAD
         id,
         team_id,
         evaluator_id,
@@ -39,6 +40,13 @@ export default async function Round1DashboardPage() {
           id, team_code, status, team_name,
           students(id, name, is_leader, roll_number),
           problem_statement:problem_statements(id, statement_code, title, description, theme, category, organization)
+=======
+        *,
+        teams(
+          *,
+          students(*),
+          problem_statement:problem_statements(*)
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
         )
       `)
       .eq('evaluator_id', session.user.id);

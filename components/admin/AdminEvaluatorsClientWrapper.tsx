@@ -403,7 +403,11 @@ export const AdminEvaluatorsClientWrapper: React.FC<
             editingEvaluator.role !==
             editRole && (
               <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+<<<<<<< HEAD
                 Changing a user&apos;s role can affect their
+=======
+                Changing a user's role can affect their
+>>>>>>> 52fc6d6b1d321253741e9249f27c7a76ea218d59
                 existing permissions and assignments.
                 Only do this before evaluation activity
                 has started.
