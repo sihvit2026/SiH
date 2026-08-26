@@ -1,18 +1,20 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function LoginPage() {
+function LoginForm() {
   const [identifier, setIdentifier] = useState(''); // username OR email
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams?.get('redirect') || '';
 
   // Password login: accepts username (e.g. eval-abc123) or real email
   const handlePasswordLogin = async (e: React.FormEvent) => {
@@ -39,8 +41,11 @@ export default function LoginPage() {
             : error.message,
         });
       } else {
-        // Let auth callback route handle redirect based on role
-        router.push('/auth/callback?type=password');
+        // Pass redirectTo to auth callback
+        const callbackUrl = redirectTo
+          ? `/auth/callback?type=password&redirect=${encodeURIComponent(redirectTo)}`
+          : '/auth/callback?type=password';
+        router.push(callbackUrl);
       }
     } catch (err) {
       setMessage({ type: 'error', text: err instanceof Error ? err.message : 'An error occurred.' });
@@ -136,5 +141,13 @@ export default function LoginPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" /></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
